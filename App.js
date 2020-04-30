@@ -6,14 +6,14 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, { Component } from 'react';
+import { Container,Header,Content, Button, Text } from 'native-base';
 import {
   StyleSheet,
   View,
   TextInput,
   ImageBackground,
   Image,
-  Text,
   TouchableOpacity,
   Alert
 } from 'react-native';
@@ -23,35 +23,35 @@ import logo from './assets/logo.png';
 
 const App: () => React$Node = () => {
   return (
-      <View style={styles.container} id={"mainContainer"}>
-        <ImageBackground source={backgroundImage} style={styles.image} id={"backgroundImage"}>
-          <Image source={logo} style={styles.logo} id={"logoIcon"}/>
-          <View id={"textInputs"}>
-            <TextInput
-                id={"usernameInput"}
-                style={styles.userInput}
-                inlineImageLeft={'usernameicon'}
-                placeholder={"correo electrónico"}
-            />
-            <TextInput
-                id={"passwordInput"}
-                style={styles.userInput}
-                inlineImageLeft={'passwordicon'}
-                placeholder={"contraseña"}
-                secureTextEntry={true}
-            />
-            <Text id={"forgotPassText"} style={styles.forgotPassText}>Olvidaste tu contraseña?</Text>
-          </View>
-          <View id={"buttons"} style={styles.buttonsContainer}>
-            <TouchableOpacity style={styles.button} onPress={Alert.alert("molt be pavo")}>
-              <Text>Iniciar sesión</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={Alert.alert("molt be pavo")}>
-              <Text>Registrarse</Text>
-            </TouchableOpacity>
-          </View>
-        </ImageBackground>
-      </View>
+    <View style={styles.container} id={"mainContainer"}>
+      <ImageBackground source={backgroundImage} style={styles.image} id={"backgroundImage"}>
+        <Image source={logo} style={styles.logo} id={"logoIcon"} />
+        <View id={"textInputs"}>
+          <TextInput
+            id={"usernameInput"}
+            style={styles.userInput}
+            inlineImageLeft={'usernameicon'}
+            placeholder={"correo electrónico"}
+          />
+          <TextInput
+            id={"passwordInput"}
+            style={styles.userInput}
+            inlineImageLeft={'passwordicon'}
+            placeholder={"contraseña"}
+            secureTextEntry={true}
+          />
+          <Text id={"forgotPassText"} style={styles.forgotPassText}>Olvidaste tu contraseña?</Text>
+        </View>
+        <View id={"buttons"} style={styles.buttonsContainer}>
+          <Button rounded small>
+            <Text>Iniciar sesión</Text>
+          </Button>
+          <Button rounded small style={styles.buttons}>
+            <Text>Registrarse</Text>
+          </Button>
+        </View>
+      </ImageBackground>
+    </View>
   );
 };
 
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     left: "30%",
     //fontFamily: "Sarala",
     fontSize: 15,
-    lineHeight:24,
+    lineHeight: 24,
     textDecorationLine: "underline",
     color: "#1400FF"
   },
@@ -100,16 +100,12 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
     position: "relative",
-    left: "40%",
     bottom: "10%",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttons: {
-    width: 30,
-    height: 61,
-    backgroundColor: "#3A2950",
-    borderRadius: 16,
-    padding: 10,
-    alignItems: "center"
+    marginTop: 20,
   }
 });
 
