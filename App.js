@@ -15,23 +15,30 @@ import {
   ImageBackground,
   Image,
   TouchableOpacity,
-  Alert
+  Alert,
+  TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView
 } from 'react-native';
 
 import backgroundImage from './assets/loginBackground.jpg';
 import logo from './assets/logo.png';
 
+
+
 const App: () => React$Node = () => {
   return (
-    <View style={styles.container} id={"mainContainer"}>
+    <KeyboardAvoidingView behavior={Platform.OS == "android" ? "padding" : "height"} style={styles.container}>
+    <TouchableWithoutFeedback onPress={() => {Keyboard.dismiss();}}>
+    <View style={styles.container} id={"mainContainer"} onPress={Keyboard.dismiss()}>
       <ImageBackground source={backgroundImage} style={styles.image} id={"backgroundImage"}>
+          <View id={"componentsContainer"}>
         <Image source={logo} style={styles.logo} id={"logoIcon"} />
-        <View id={"textInputs"}>
+        <View id={"textInputs"} style={styles.textInputs}>
           <TextInput
             id={"usernameInput"}
             style={styles.userInput}
             inlineImageLeft={'usernameicon'}
             placeholder={"correo electrónico"}
+            dismiss
           />
           <TextInput
             id={"passwordInput"}
@@ -43,15 +50,18 @@ const App: () => React$Node = () => {
           <Text id={"forgotPassText"} style={styles.forgotPassText}>Olvidaste tu contraseña?</Text>
         </View>
         <View id={"buttons"} style={styles.buttonsContainer}>
-          <Button rounded small>
+          <Button rounded style={styles.buttons}>
             <Text>Iniciar sesión</Text>
           </Button>
-          <Button rounded small style={styles.buttons}>
+          <Button rounded style={styles.buttons}>
             <Text>Registrarse</Text>
           </Button>
         </View>
+        </View>
       </ImageBackground>
     </View>
+    </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -70,7 +80,11 @@ const styles = StyleSheet.create({
     height: 200,
     position: "relative",
     left: "25%",
+    marginTop: "1%",
     bottom: "20%"
+  },
+  textInputs: {
+    marginTop: '20%'
   },
   userInput: {
     position: "relative",
@@ -106,6 +120,9 @@ const styles = StyleSheet.create({
   },
   buttons: {
     marginTop: 20,
+    width: "50%",
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 });
 
