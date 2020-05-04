@@ -6,23 +6,52 @@
  * @flow strict-local
  */
 
-import React, { Component } from "react";
+import React, {Component} from 'react';
+import {createAppContainer, createSwitchNavigator} from 'react-navigation'
+import {createStackNavigator} from 'react-navigation-stack'
+import LoginScreen from './screens/LoginScreen'
+import HomeScreen from './screens/HomeScreen'
+import LoadingScreen from './screens/LoadingScreen'
+import RegisterScreen from './screens/RegisterScreen'
+const cors = require('cors');
+var serviceAccount = require('./functions/permissionsPrivateKey.json');
+import * as firebase from 'firebase'
 import { Container, Header, Content, Button, Text } from "native-base";
-import {
-  StyleSheet,
-  View,
-  TextInput,
-  ImageBackground,
-  Image,
-  TouchableOpacity,
-  Alert,
-  TouchableWithoutFeedback,
-  Keyboard,
-  KeyboardAvoidingView,
-} from "react-native";
-
+import {StyleSheet,View,TextInput,ImageBackground,Image,TouchableOpacity,Alert,TouchableWithoutFeedback,Keyboard,KeyboardAvoidingView,} from "react-native";
 import backgroundImage from "./assets/loginBackground.jpg";
 import logo from "./assets/logo.png";
+
+firebase.initializeApp({
+  apiKey: "AIzaSyBG4f03sNe_4yvzv9b8mYWe4V2_T12IX70",                             
+  applicationId: "1:447130442986:web:d8190ee1660ce41efa0b93",      
+  projectId: "joinparty-4e37b",               
+  authDomain: "joinparty-4e37b.firebaseapp.com",  
+  databaseURL: "https://joinparty-4e37b.firebaseio.com",
+  storageBucket: "joinparty-4e37b.appspot.com",
+  messagingSenderId: "447130442986",
+  appId: "1:447130442986:web:d8190ee1660ce41efa0b93"
+});
+
+const AppStack = createStackNavigator ({
+  Home: HomeScreen
+}, { headerMode: 'none' });
+const AuthStack = createStackNavigator ({
+  Login: LoginScreen,
+  Register: RegisterScreen
+}, { headerMode: 'none' });
+
+export default createAppContainer (
+  createSwitchNavigator (
+    {
+      Loading: LoadingScreen,
+      App: AppStack,
+      Auth: AuthStack
+    },
+    {
+      initialRouteName: "Loading"
+    }
+  )
+);
 
 const App: () => React$Node = () => {
   return (
@@ -151,5 +180,3 @@ const styles = StyleSheet.create({
     marginTop: '-15%'
   }
 });
-
-export default App;

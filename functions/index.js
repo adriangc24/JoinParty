@@ -6,6 +6,7 @@ var serviceAccount = require('./permissionsPrivateKey.json');
 const express = require('express');
 const app = express();
 app.use(cors({ origin: true }));
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://joinparty-4e37b.firebaseio.com",
