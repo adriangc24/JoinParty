@@ -62,7 +62,7 @@ buck-out/
 .expo/*
 
 .env
-
+env.json
 # file with api keys
 permissionsPrivateKey.json
 
