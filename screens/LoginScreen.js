@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     width: "45%",
     height: "25%",
     left: "27%",
-    marginTop: "32%",
+    marginTop: "40%",
     bottom: "20%",
   },
   textInputs: {
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
     position: "relative",
-    bottom: "10%",
+    bottom: "20%",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -217,5 +217,6 @@ const styles = StyleSheet.create({
     bottom: "10%",
     alignItems: "center",
     marginTop: "-15%",
+    bottom: "4%",
   },
 });
