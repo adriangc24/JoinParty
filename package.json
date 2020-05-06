@@ -16,6 +16,7 @@
     "babel-node": "0.0.1-security",
     "babel-preset-expo": "^8.1.0",
     "babel-preset-react": "^6.24.1",
+    "choco": "^0.2.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "expo": "~37.0.3",

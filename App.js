@@ -47,7 +47,7 @@ const AuthStack = createStackNavigator(
     Login: LoginScreen,
     Register: RegisterScreen,
   },
-  { headerMode: "none" }
+  { headerMode: "float" }
 );
 
 export default createAppContainer(

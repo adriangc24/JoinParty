@@ -11,12 +11,27 @@ import {
   Keyboard,
   KeyboardAvoidingView,
 } from "react-native";
-import { Container, Header, Content, Button, Text } from "native-base";
+import {
+  Container,
+  Header,
+  Content,
+  Button,
+  Text,
+  Left,
+  Body,
+  Right,
+  Title,
+  Subtitle,
+} from "native-base";
 import backgroundImage from "./.././assets/loginBackground.jpg";
 import logo from "./.././assets/logo.png";
 import * as firebase from "firebase";
 
 export default class LoginScreen extends React.Component {
+  static navigationOptions = {
+    header: null,
+  };
+
   state = {
     email: "",
     password: "",
@@ -25,101 +40,106 @@ export default class LoginScreen extends React.Component {
 
   handleLogin = () => {
     console.log("handling login");
-    //const { email, password } = this.state;
-    email = this.refs.emailInput._lastNativeText;
-    password = this.refs.passwordInput._lastNativeText;
+
+    var email = this.refs.emailInput._lastNativeText;
+    var password = this.refs.passwordInput._lastNativeText;
 
     console.log("--- " + email + " " + password);
 
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .catch((error) => this.setState({ errorMessage: error.message }));
+    if (email == "" || password == "" || password == undefined || email == "") {
+      Alert.alert("Error: 1 o más campos vacíos !");
+    } else if (!(email.includes("@") && email.includes("."))) {
+      Alert.alert("Error: correo inválido !");
+    } else {
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .catch((error) =>
+          /*this.setState({ errorMessage: error.message })*/ Alert.alert(
+            "Error: credenciales incorrectas !"
+          )
+        );
+    }
   };
 
   render() {
     return (
-      <KeyboardAvoidingView
-        behavior={Platform.OS == "android" ? "padding" : "height"}
-        style={styles.container}
+      <TouchableWithoutFeedback
+        onPress={() => {
+          Keyboard.dismiss();
+        }}
       >
-        <TouchableWithoutFeedback
-          onPress={() => {
-            Keyboard.dismiss();
-          }}
+        <View
+          style={styles.container}
+          id={"mainContainer"}
+          onPress={Keyboard.dismiss()}
         >
-          <View
-            style={styles.container}
-            id={"mainContainer"}
-            onPress={Keyboard.dismiss()}
+          <ImageBackground
+            source={backgroundImage}
+            style={styles.backgroundImage}
+            id={"backgroundImage"}
           >
-            <ImageBackground
-              source={backgroundImage}
-              style={styles.backgroundImage}
-              id={"backgroundImage"}
-            >
-              <View id={"componentsContainer"}>
-                <Image source={logo} style={styles.logo} id={"logoIcon"} />
-                <View id={"textInputs"} style={styles.textInputs}>
-                  <TextInput
-                    style={styles.userInput}
-                    autoCapitalize="none"
-                    //inlineImageLeft={"usernameicon"}
-                    placeholder={"Correo electrónico"}
-                    ref={"emailInput"}
-                    //onChangeText={(email) => this.setState({ email })}
-                    //value={this.state.email}
-                  />
-                  <TextInput
-                    autoCapitalize="none"
-                    style={styles.userInput}
-                    //inlineImageLeft={"passwordicon"}
-                    placeholder={"Contraseña"}
-                    secureTextEntry={true}
-                    ref={"passwordInput"}
-                    //onChangeText={(password) => this.setState({ password })}
-                    //value={this.state.password}
-                  />
-                </View>
-                <View id={"buttons"} style={styles.buttonsContainer}>
-                  <Button
-                    rounded
-                    style={styles.buttons}
-                    onPress={this.handleLogin}
-                  >
-                    <Text>Iniciar sesión</Text>
-                  </Button>
-                  <Button
-                    rounded
-                    style={styles.buttons}
-                    onPress={() => this.props.navigation.navigate("Register")}
-                  >
-                    <Text>Registrarse</Text>
-                  </Button>
-                </View>
+            <View id={"componentsContainer"}>
+              <Image source={logo} style={styles.logo} id={"logoIcon"} />
+              <View id={"textInputs"} style={styles.textInputs}>
+                <TextInput
+                  style={styles.userInput}
+                  autoCapitalize="none"
+                  //inlineImageLeft={"usernameicon"}
+                  placeholder={"Correo electrónico"}
+                  ref={"emailInput"}
+                  //onChangeText={(email) => this.setState({ email })}
+                  //value={this.state.email}
+                />
+                <TextInput
+                  autoCapitalize="none"
+                  style={styles.userInput}
+                  //inlineImageLeft={"passwordicon"}
+                  placeholder={"Contraseña"}
+                  secureTextEntry={true}
+                  ref={"passwordInput"}
+                  //onChangeText={(password) => this.setState({ password })}
+                  //value={this.state.password}
+                />
               </View>
-              <View style={styles.errorMessage}>
-                {this.state.errorMessage && (
-                  <Text
-                    style={[
-                      { color: "red" },
-                      { justifyContent: "center" },
-                      { fontSize: "18" },
-                    ]}
-                  >
-                    {this.state.errorMessage}
-                  </Text>
-                )}
+              <View id={"buttons"} style={styles.buttonsContainer}>
+                <Button
+                  rounded
+                  style={styles.buttons}
+                  onPress={this.handleLogin}
+                >
+                  <Text>Iniciar sesión</Text>
+                </Button>
+                <Button
+                  rounded
+                  style={styles.buttons}
+                  onPress={() => this.props.navigation.navigate("Register")}
+                >
+                  <Text>Registrarse</Text>
+                </Button>
               </View>
-            </ImageBackground>
-            <View style={styles.forgotContainer}>
-              <Text id={"forgotPassText"} style={styles.forgotPassText}>
-                Olvidaste tu contraseña?
-              </Text>
             </View>
+            <View style={styles.errorMessage}>
+              {this.state.errorMessage && (
+                <Text
+                  style={[
+                    { color: "red" },
+                    { justifyContent: "center" },
+                    { fontSize: "18" },
+                  ]}
+                >
+                  {this.state.errorMessage}
+                </Text>
+              )}
+            </View>
+          </ImageBackground>
+          <View style={styles.forgotContainer}>
+            <Text id={"forgotPassText"} style={styles.forgotPassText}>
+              Olvidaste tu contraseña?
+            </Text>
           </View>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+        </View>
+      </TouchableWithoutFeedback>
     );
   }
 }
@@ -167,7 +187,7 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     fontSize: 24,
     height: "30%",
-    padding: "2%",
+    padding: "1.35%",
     marginBottom: 20,
     borderRadius: 25,
   },
