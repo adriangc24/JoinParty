@@ -1,5 +1,8 @@
 import * as React from "react";
-import ProfileScreen from "./ProfileScreen";
+import ProfileContent from "./content/ProfileContent";
+import SearchContent from "./content/SearchContent";
+import HomeContent from "./content/HomeContent";
+
 import {
   Platform,
   View,
@@ -31,12 +34,14 @@ var props = {
 
 export default class HomeScreen extends React.Component {
   render() {
-    loadPage();
     return (
       <View id={"homeComps"} style={styles.container}>
         <Content>
           <View id={"pageToLoad"}>
-            {props.activePage == "ProfileScreen" && <ProfileScreen />}
+            {/* Este condicional determina que pagina sera la que se cargue */}
+            {props.activePage == "HomeScreen" && <HomeContent />}
+            {props.activePage == "ProfileScreen" && <ProfileContent />}
+            {props.activePage == "SearchScreen" && <SearchContent />}
           </View>
         </Content>
         <View id={"footerContainer"} style={styles.footerContainer}>
@@ -80,19 +85,6 @@ export default class HomeScreen extends React.Component {
     );
   }
 }
-function loadPage() {
-  console.log("loading page.....");
-  if (props.activePage == "HomeScreen") {
-    console.log("-- home page");
-  } else if (props.activePage == "SearchScreen") {
-    console.log("-- search page");
-  } else if (props.activePage == "AddScreen") {
-    console.log("-- add page");
-  } else if (props.activePage == "ProfileScreen") {
-    console.log("-- profile page");
-    return <ProfileScreen />;
-  }
-}
 
 function setIconStyle(page) {
   console.log("setting style to icon");
@@ -114,17 +106,13 @@ function setActivePage(page) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#121212",
   },
   footerTab: {
     backgroundColor: "black",
   },
-});
-
-const iconStyles = StyleSheet.create({
-  icon: {
-    color: "#f7034c",
-  },
-  iconPressed: {
-    color: "#ffffff",
+  footer: {
+    borderColor: "#da0446",
+    borderTopWidth: 1.5,
   },
 });

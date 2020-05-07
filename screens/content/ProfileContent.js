@@ -22,7 +22,7 @@ import {
   Title,
 } from "native-base";
 
-export default class ProfileScreen extends React.Component {
+export default class ProfileContent extends React.Component {
   render() {
     return (
       <View id={"profileComps"} style={styles.container}>
