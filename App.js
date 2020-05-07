@@ -5,6 +5,8 @@ import LoginScreen from "./screens/LoginScreen";
 import HomeScreen from "./screens/HomeScreen";
 import LoadingScreen from "./screens/LoadingScreen";
 import RegisterScreen from "./screens/RegisterScreen";
+import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
+
 const cors = require("cors");
 var serviceAccount = require("./functions/permissionsPrivateKey.json");
 import * as firebase from "firebase";
@@ -39,6 +41,7 @@ firebase.initializeApp({
 const AppStack = createStackNavigator(
   {
     Home: HomeScreen,
+    ForgotPass: ForgotPasswordScreen,
   },
   { headerMode: "none" }
 );
@@ -46,6 +49,7 @@ const AuthStack = createStackNavigator(
   {
     Login: LoginScreen,
     Register: RegisterScreen,
+    ForgotPass: ForgotPasswordScreen,
   },
   { headerMode: "float" }
 );

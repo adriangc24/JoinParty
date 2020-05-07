@@ -93,6 +93,16 @@ export default class RegisterScreen extends React.Component {
         .auth()
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then((res) => {
+          firebase
+            .auth()
+            .currentUser.sendEmailVerification(actionCodeSettings)
+            .then(function () {
+              console.log("-- Email sent succesful");
+            })
+            .catch(function (error) {
+              console.log("-- Email sent error");
+            });
+
           res.user.updateProfile({
             displayName: this.state.displayName,
           });
@@ -103,7 +113,8 @@ export default class RegisterScreen extends React.Component {
             email: "",
             password: "",
           });
-          this.props.navigation.navigate("Login");
+
+          this.props.navigation.navigate("Home");
         })
         .catch((error) => this.setState({ errorMessage: error.message }));
     }

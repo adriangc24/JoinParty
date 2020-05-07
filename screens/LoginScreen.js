@@ -119,24 +119,17 @@ export default class LoginScreen extends React.Component {
                 </Button>
               </View>
             </View>
-            <View style={styles.errorMessage}>
-              {this.state.errorMessage && (
-                <Text
-                  style={[
-                    { color: "red" },
-                    { justifyContent: "center" },
-                    { fontSize: "18" },
-                  ]}
-                >
-                  {this.state.errorMessage}
-                </Text>
-              )}
-            </View>
           </ImageBackground>
           <View style={styles.forgotContainer}>
-            <Text id={"forgotPassText"} style={styles.forgotPassText}>
-              Olvidaste tu contraseña?
-            </Text>
+            <Button transparent>
+              <Text
+                success
+                style={{ fontWeight: "bold" }}
+                onPress={() => this.props.navigation.navigate("ForgotPass")}
+              >
+                Olvidaste tu contraseña ?
+              </Text>
+            </Button>
           </View>
         </View>
       </TouchableWithoutFeedback>
