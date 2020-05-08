@@ -51,8 +51,7 @@ export default class CardView extends React.Component {
         <CardItem cardBody>
           <Image
             source={{
-              uri:
-                "https://firebasestorage.googleapis.com/v0/b/joinparty-4e37b.appspot.com/o/posts%2Fparty.gif?alt=media&token=b42c5c17-3e9a-45ce-8966-08bfe6c7792f",
+              uri: "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
             }}
             style={{ height: 200, width: null, flex: 1 }}
           />
