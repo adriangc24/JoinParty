@@ -28,6 +28,7 @@
     "firebase-admin": "^8.11.0",
     "fs": "0.0.1-security",
     "link": "^0.1.5",
+    "n": "^6.5.1",
     "native-base": "^2.13.12",
     "path": "^0.12.7",
     "prettier": "^2.0.5",
@@ -44,6 +45,7 @@
     "react-native-sglistview": "^0.4.5",
     "react-native-unimodules": "~0.9.0",
     "react-native-web": "^0.11.7",
+    "react-native-webrtc": "^1.75.3",
     "react-navigation": "^4.3.9",
     "react-navigation-stack": "^2.4.0"
   },
