@@ -2,6 +2,7 @@ import * as React from "react";
 import ProfileContent from "./content/ProfileContent";
 import SearchContent from "./content/SearchContent";
 import HomeContent from "./content/HomeContent";
+import VideoTest from "./content/VideoTest";
 
 import {
   Platform,
@@ -41,7 +42,7 @@ export default class HomeScreen extends React.Component {
             {/* Este condicional determina que pagina sera la que se cargue */}
             {props.activePage == "HomeScreen" && <HomeContent />}
             {props.activePage == "ProfileScreen" && <ProfileContent />}
-            {props.activePage == "SearchScreen" && <SearchContent />}
+            {props.activePage == "VideoTest" && <VideoTest />}
           </View>
         </Content>
         <View id={"footerContainer"} style={styles.footerContainer}>
@@ -65,7 +66,7 @@ export default class HomeScreen extends React.Component {
               <Button
                 id={"search"}
                 onPress={() => {
-                  setActivePage("SearchScreen"), this.forceUpdate();
+                  setActivePage("VideoTest"), this.forceUpdate();
                 }}
               >
                 <Icon name="search" style={setIconStyle("SearchScreen")} />

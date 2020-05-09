@@ -12,6 +12,13 @@
     ],
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "ios": {
+      "bundleIdentifier": "JoinParty"
+    },
+    "android": {
+      "package": "JoinParty"
+    },
+    "entryPoint": "node_modules/expo/AppEntry.js"
   }
 }
