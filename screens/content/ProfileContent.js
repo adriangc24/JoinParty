@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as firebase from "firebase";
-import { ImagePicker } from "expo";
+import ImagePicker from "react-native-image-picker";
+var env = require("./../../env.json");
 var defaultProfile = require("../../assets/defaultProfile.png");
 import {
   Platform,
@@ -27,23 +28,65 @@ import {
   Title,
   Thumbnail,
 } from "native-base";
+var uid,
+  uri,
+  lastname = "Apellidos",
+  name = "Nombre",
+  email = "Correo electronico",
+  password = "Contraseña",
+  password2 = "Repita la contraseña",
+  photo = null,
+  displayname = "Nombre de usuario";
+var isDbReady = false;
+// Import Admin SDK
+/*var admin = require("firebase-admin");
+// Get a database reference to our posts
+var db = admin.database();
+var ref = db.ref("/users");*/
 
 export default class ProfileContent extends React.Component {
-  componentDidMount() {
-    const { email, displayName } = firebase.auth().currentUser;
-
-    this.setState({ email, displayName });
+  constructor() {
+    super();
+    this.state = {
+      name: "",
+      lastname: "",
+      displayname: "",
+      email: "",
+      photo: "",
+    };
   }
-  userProps = {
-    uid: null,
-    uri: null,
-    name: null,
-    lastname: null,
-    displayname: null,
-    email: null,
-    password1: null,
-    password2: null,
+  state = {
+    name: "Nombre",
+    lastname: "Apellidos",
+    displayname: "Nombre de usuario",
+    email: "Correo electrónico",
+    photo: null,
   };
+
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        console.log("user logged");
+        var usuario = firebase.database().ref("/users/" + user.uid);
+        usuario.once("value").then((snapshot) => {
+          var usr = snapshot.val();
+          console.log("-----O " + usr.email);
+          console.log("-----O " + usr.name);
+          console.log("-----O " + usr.lastname);
+          console.log("-----O " + usr.displayname);
+
+          this.setState({
+            name: usr.name,
+            lastname: usr.lastname,
+            displayname: usr.displayname,
+            email: usr.email,
+          });
+        });
+      } else {
+        console.log("user not logged");
+      }
+    });
+  }
 
   signOutUser = () => {
     Alert.alert(
@@ -83,7 +126,7 @@ export default class ProfileContent extends React.Component {
                   autoCapitalize="sentences"
                   style={styles.userInput}
                   //inlineImageLeft={"passwordicon"}
-                  placeholder={"Nombre"}
+                  placeholder={this.state.name}
                   ref={"nameInput"}
                   //onChangeText={(password) => this.setState({ password })}
                   //value={this.state.password}
@@ -91,17 +134,14 @@ export default class ProfileContent extends React.Component {
                 <TextInput
                   autoCapitalize="sentences"
                   style={styles.userInput}
-                  //inlineImageLeft={"passwordicon"}
-                  placeholder={"Apellidos"}
+                  placeholder={this.state.lastname}
                   ref={"lastnamesInput"}
-                  //onChangeText={(password) => this.setState({ password })}
-                  //value={this.state.password}
                 />
                 <TextInput
                   autoCapitalize="none"
                   style={styles.userInput}
                   //inlineImageLeft={"passwordicon"}
-                  placeholder={"Nombre de usuario"}
+                  placeholder={this.state.displayname}
                   ref={"usernameInput"}
                   //value={this.state.displayName}
                   /*onChangeText={(val) =>
@@ -112,7 +152,7 @@ export default class ProfileContent extends React.Component {
                   autoCapitalize="none"
                   style={styles.userInput}
                   //inlineImageLeft={"passwordicon"}
-                  placeholder={"Correo electrónico"}
+                  placeholder={this.state.email}
                   ref={"emailInput"}
                   /*value={this.state.email}
                   onChangeText={(val) => this.updateInputVal(val, "email")}*/
@@ -167,16 +207,35 @@ export default class ProfileContent extends React.Component {
   }
 }
 
-function changeProfilePhoto() {
+changeProfilePhoto = () => {
   console.log("photo clicked");
-}
-firebase.auth().onAuthStateChanged(function (user) {
-  if (user) {
-    console.log("user logged");
-  } else {
-    // No user is signed in.
-  }
-});
+  var src;
+  const options = {
+    title: "Selecciona la foto de perfil",
+    storageOptions: {
+      skipBackup: true,
+      path: "images",
+    },
+  };
+
+  ImagePicker.showImagePicker(options, (response) => {
+    //console.log("Response = ", response);
+
+    if (response.didCancel) {
+      console.log("User cancelled image picker");
+    } else if (response.error) {
+      console.log("ImagePicker Error: ", response.error);
+    } else if (response.customButton) {
+      console.log("User tapped custom button: ", response.customButton);
+    } else {
+      const source = { uri: response.uri };
+      this.setState.bind(this)(() => ({
+        photo: source,
+      }));
+    }
+  });
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
