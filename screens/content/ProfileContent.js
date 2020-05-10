@@ -37,7 +37,7 @@ var uid,
   password2 = "Repita la contraseña",
   photo = null,
   displayname = "Nombre de usuario";
-var isDbReady = false;
+var src;
 // Import Admin SDK
 /*var admin = require("firebase-admin");
 // Get a database reference to our posts
@@ -45,23 +45,26 @@ var db = admin.database();
 var ref = db.ref("/users");*/
 
 export default class ProfileContent extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      name: "",
-      lastname: "",
-      displayname: "",
-      email: "",
-      photo: "",
-    };
-  }
   state = {
     name: "Nombre",
     lastname: "Apellidos",
     displayname: "Nombre de usuario",
     email: "Correo electrónico",
-    photo: null,
+    photo: defaultProfile,
   };
+
+  constructor(props) {
+    super(props);
+
+    this.changeProfilePhoto = this.changeProfilePhoto.bind(this);
+    /* this.state = {
+      name: "",
+      lastname: "",
+      displayname: "",
+      email: "",
+      photo: defaultProfile,
+    }; */
+  }
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
@@ -104,6 +107,37 @@ export default class ProfileContent extends React.Component {
     );
   };
 
+  changeProfilePhoto = () => {
+    console.log("photo clicked");
+    var src;
+    const options = {
+      title: "Selecciona la foto de perfil",
+      storageOptions: {
+        skipBackup: true,
+        path: "images",
+      },
+    };
+
+    ImagePicker.showImagePicker(options, (response) => {
+      //console.log("Response = ", response);
+
+      if (response.didCancel) {
+        console.log("User cancelled image picker");
+      } else if (response.error) {
+        console.log("ImagePicker Error: ", response.error);
+      } else if (response.customButton) {
+        console.log("User tapped custom button: ", response.customButton);
+      } else {
+        const source = { uri: response.uri };
+        src = source;
+        console.log("___________ " + this);
+        this.setState({
+          photo: source,
+        });
+      }
+    });
+  };
+
   render() {
     return (
       <View id={"profileComps"} style={styles.container}>
@@ -114,10 +148,10 @@ export default class ProfileContent extends React.Component {
               style={styles.profilePhotoContainer}
             >
               <TouchableOpacity
-                onPress={() => changeProfilePhoto()}
+                onPress={() => this.changeProfilePhoto()}
                 style={styles.profileImage}
               >
-                <Thumbnail source={defaultProfile} style={styles.photo} />
+                <Thumbnail source={this.state.photo} style={styles.photo} />
               </TouchableOpacity>
             </View>
             <View id={"form"} style={styles.form}>
@@ -125,11 +159,8 @@ export default class ProfileContent extends React.Component {
                 <TextInput
                   autoCapitalize="sentences"
                   style={styles.userInput}
-                  //inlineImageLeft={"passwordicon"}
                   placeholder={this.state.name}
                   ref={"nameInput"}
-                  //onChangeText={(password) => this.setState({ password })}
-                  //value={this.state.password}
                 />
                 <TextInput
                   autoCapitalize="sentences"
@@ -140,42 +171,28 @@ export default class ProfileContent extends React.Component {
                 <TextInput
                   autoCapitalize="none"
                   style={styles.userInput}
-                  //inlineImageLeft={"passwordicon"}
                   placeholder={this.state.displayname}
                   ref={"usernameInput"}
-                  //value={this.state.displayName}
-                  /*onChangeText={(val) =>
-                    this.updateInputVal(val, "displayName")
-                  }*/
                 />
                 <TextInput
                   autoCapitalize="none"
                   style={styles.userInput}
-                  //inlineImageLeft={"passwordicon"}
                   placeholder={this.state.email}
                   ref={"emailInput"}
-                  /*value={this.state.email}
-                  onChangeText={(val) => this.updateInputVal(val, "email")}*/
                 />
                 <TextInput
                   autoCapitalize="none"
                   style={styles.userInput}
-                  //inlineImageLeft={"passwordicon"}
                   placeholder={"Contraseña"}
                   secureTextEntry={true}
                   ref={"passwordInput"}
-                  //onChangeText={(password) => this.setState({ password })}
-                  //value={this.state.password}
                 />
                 <TextInput
                   autoCapitalize="none"
                   style={styles.userInput}
-                  //inlineImageLeft={"passwordicon"}
                   placeholder={"Repita la contraseña"}
                   secureTextEntry={true}
                   ref={"passwordInput2"}
-                  //onChangeText={(password) => this.setState({ password })}
-                  //value={this.state.password}
                 />
               </View>
               <View id={"buttonConfirm"} styles={styles.buttonConfirmContainer}>
@@ -206,35 +223,6 @@ export default class ProfileContent extends React.Component {
     );
   }
 }
-
-changeProfilePhoto = () => {
-  console.log("photo clicked");
-  var src;
-  const options = {
-    title: "Selecciona la foto de perfil",
-    storageOptions: {
-      skipBackup: true,
-      path: "images",
-    },
-  };
-
-  ImagePicker.showImagePicker(options, (response) => {
-    //console.log("Response = ", response);
-
-    if (response.didCancel) {
-      console.log("User cancelled image picker");
-    } else if (response.error) {
-      console.log("ImagePicker Error: ", response.error);
-    } else if (response.customButton) {
-      console.log("User tapped custom button: ", response.customButton);
-    } else {
-      const source = { uri: response.uri };
-      this.setState.bind(this)(() => ({
-        photo: source,
-      }));
-    }
-  });
-};
 
 const styles = StyleSheet.create({
   container: {

@@ -60,7 +60,7 @@ async function makeCall() {
 async function answerCall() {
   let ayyy = db.ref("events/offer");
 
-  ayyy.once("value").then(async snapshot => {
+  ayyy.once("value").then(async (snapshot) => {
     let offer = snapshot.val();
     peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
     const answer = await peerConnection.createAnswer();
@@ -150,6 +150,25 @@ export default class VideoTest extends React.Component {
             videoSourceId = sourceInfo.deviceId;
           }
         }
+      }
+
+      const constraints = {
+        audio: true,
+        video: {
+          mandatory: {
+            minWidth: 500, // Provide your own width, height and frame rate here
+            minHeight: 300,
+            minFrameRate: 30,
+          },
+          facingMode: isFront ? "user" : "environment",
+          optional: videoSourceId ? [{ sourceId: videoSourceId }] : [],
+        },
+      };
+
+      mediaDevices.getUserMedia(constraints).then(success).catch(failure);
+    });
+  };
+  sendToPeer = (messageType, payload) => {};
 
         const constraints = {
           audio: true,
@@ -208,6 +227,10 @@ export default class VideoTest extends React.Component {
       });
     }
 
+  addCandidate = () => {
+    // retrieve and parse the Candidate copied from the remote peer
+    // const candidate = JSON.parse(this.textref.value)
+    // console.log('Adding candidate:', candidate)
 
     render() {
         const {
@@ -286,10 +309,27 @@ export default class VideoTest extends React.Component {
                         </View>
                     </ScrollView>
                 </View>
-            </SafeAreaView>
-        );
-    }
-};
+              </TouchableOpacity>
+            </View>
+          </View>
+          <ScrollView style={{ ...styles.scrollView }}>
+            <View
+              style={{
+                flex: 1,
+                width: "100%",
+                backgroundColor: "black",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {remoteVideo}
+            </View>
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   buttonsContainer: {
