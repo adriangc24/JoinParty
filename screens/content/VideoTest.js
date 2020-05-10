@@ -5,50 +5,56 @@
  * @format
  * @flow strict-local
  */
-
+import * as firebase from "firebase";
 import React from 'react';
 import {
-    SafeAreaView,
-    StyleSheet,
-    ScrollView,
-    View,
-    Text,
-    StatusBar,
-    TouchableOpacity,
-    Dimensions,
-    Alert
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  View,
+  Text,
+  StatusBar,
+  TouchableOpacity,
+  Dimensions,
+  Alert
 } from 'react-native';
 
 import {
-    RTCPeerConnection,
-    RTCIceCandidate,
-    RTCSessionDescription,
-    RTCView,
-    MediaStream,
-    MediaStreamTrack,
-    mediaDevices,
-    registerGlobals
+  RTCPeerConnection,
+  RTCIceCandidate,
+  RTCSessionDescription,
+  RTCView,
+  MediaStream,
+  MediaStreamTrack,
+  mediaDevices,
+  registerGlobals
 } from 'react-native-webrtc';
 
-import {  db } from "./../../App";
+import {
+  db
+} from "./../../App";
 
 const dimensions = Dimensions.get('window');
-const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
+const configuration = {
+  'iceServers': [{
+    'urls': 'stun:stun.l.google.com:19302'
+  }]
+};
 const peerConnection = new RTCPeerConnection(configuration);
 
 async function makeCall() {
-    db.ref("events").on("child_added" , async snapshot => {
-        if (snapshot.val().answer) {
-            const remoteDesc = new RTCSessionDescription(snapshot.val().answer);
-            await peerConnection.setRemoteDescription(remoteDesc);
-            console.log("peer connection okay");
-        }
-    });
-    const offer = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offer);
-    db.ref("events").set({
-      "offer": offer
-    });
+  db.ref("events").on("child_added", async snapshot => {
+    if (snapshot.val().answer) {
+      const remoteDesc = new RTCSessionDescription(snapshot.val().answer);
+      await peerConnection.setRemoteDescription(remoteDesc);
+      console.log("peer connection okay");
+    }
+  });
+  const offer = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offer);
+  db.ref("events").set({
+    "offer": offer
+  });
 }
 
 async function answerCall() {
@@ -59,158 +65,148 @@ async function answerCall() {
     peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
     const answer = await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(answer);
-    db.ref("events").push().set({'answer': answer});
-
+    db.ref("events").push().set({
+      'answer': answer
+    });
   });
 }
 
 export default class VideoTest extends React.Component {
     constructor(props) {
-        super(props)
+      super(props)
 
-        this.state = {
-            localStream: null,
-            remoteStream: null,
-        }
+      this.state = {
+        localStream: null,
+        remoteStream: null,
+      }
 
-        this.sdp
-        this.socket = null
-        this.candidates = []
+      this.sdp
+      this.socket = null
+      this.candidates = []
     }
 
     componentDidMount = () => {
 
-        const pc_config = {
-            "iceServers": [
-                {
-                    urls: 'stun:stun.l.google.com:19302'
-                }
-            ]
+      db.ref("candidates").on("child_added", async snapshot => {
+        var lel = snapshot.val().candidate;
+        if (lel) {
+          try {
+            await peerConnection.addIceCandidate(snapshot.candidate.candidate);
+          } catch (e) {
+            console.error('Error adding received ice candidate', e);
+          }
+        }
+      })
+
+      // Listen for connectionstatechange on the local RTCPeerConnection
+      peerConnection.addEventListener('connectionstatechange', event => {
+          if (peerConnection.connectionState === 'connected') {
+              console.log('YOOO SOY GIGANTEEE')
+          }
+      });
+
+
+      peerConnection.onicecandidate = (e) => {
+        // send the candidates to the remote peer
+        // see addCandidate below to be triggered on the remote peer
+
+        if (e.candidate) {
+          // console.log(JSON.stringify(e.candidate))
+          this.sendToPeer(e.candidate)
+        }
+      }
+
+      // triggered when there is a change in connection state
+      peerConnection.oniceconnectionstatechange = (e) => {
+        console.log(e)
+      }
+
+      peerConnection.onaddstream = (e) => {
+        debugger
+        this.setState({
+          remoteStream: e.stream
+        })
+      }
+
+      const success = (stream) => {
+        console.log(stream.toURL())
+        this.setState({
+          localStream: stream
+        })
+        peerConnection.addStream(stream)
+      }
+
+      const failure = (e) => {
+        console.log('getUserMedia Error: ', e)
+      }
+
+      let isFront = true;
+      mediaDevices.enumerateDevices().then(sourceInfos => {
+        console.log(sourceInfos);
+        let videoSourceId;
+        for (let i = 0; i < sourceInfos.length; i++) {
+          const sourceInfo = sourceInfos[i];
+          if (sourceInfo.kind == "videoinput" && sourceInfo.facing == (isFront ? "front" : "environment")) {
+            videoSourceId = sourceInfo.deviceId;
+          }
         }
 
-        this.pc = new RTCPeerConnection(pc_config)
-
-        this.pc.onicecandidate = (e) => {
-            // send the candidates to the remote peer
-            // see addCandidate below to be triggered on the remote peer
-            if (e.candidate) {
-                // console.log(JSON.stringify(e.candidate))
-                this.sendToPeer('candidate', e.candidate)
-            }
+        const constraints = {
+          audio: true,
+          video: {
+            mandatory: {
+              minWidth: 500, // Provide your own width, height and frame rate here
+              minHeight: 300,
+              minFrameRate: 30
+            },
+            facingMode: (isFront ? "user" : "environment"),
+            optional: (videoSourceId ? [{
+              sourceId: videoSourceId
+            }] : [])
+          }
         }
 
-        // triggered when there is a change in connection state
-        this.pc.oniceconnectionstatechange = (e) => {
-            console.log(e)
-        }
-
-        this.pc.onaddstream = (e) => {
-            debugger
-            // this.remoteVideoref.current.srcObject = e.streams[0]
-            this.setState({
-                remoteStream: e.stream
-            })
-        }
-
-        const success = (stream) => {
-            console.log(stream.toURL())
-            this.setState({
-                localStream: stream
-            })
-            this.pc.addStream(stream)
-        }
-
-        const failure = (e) => {
-            console.log('getUserMedia Error: ', e)
-        }
-
-        let isFront = true;
-        mediaDevices.enumerateDevices().then(sourceInfos => {
-            console.log(sourceInfos);
-            let videoSourceId;
-            for (let i = 0; i < sourceInfos.length; i++) {
-                const sourceInfo = sourceInfos[i];
-                if (sourceInfo.kind == "videoinput" && sourceInfo.facing == (isFront ? "front" : "environment")) {
-                    videoSourceId = sourceInfo.deviceId;
-                }
-            }
-
-            const constraints = {
-                audio: true,
-                video: {
-                    mandatory: {
-                        minWidth: 500, // Provide your own width, height and frame rate here
-                        minHeight: 300,
-                        minFrameRate: 30
-                    },
-                    facingMode: (isFront ? "user" : "environment"),
-                    optional: (videoSourceId ? [{ sourceId: videoSourceId }] : [])
-                }
-            }
-
-            mediaDevices.getUserMedia(constraints)
-                .then(success)
-                .catch(failure);
-        });
+        mediaDevices.getUserMedia(constraints)
+          .then(success)
+          .catch(failure);
+      });
     }
-    sendToPeer = (messageType, payload) => {
-
+    sendToPeer = (payload) => {
+      db.ref("candidates").push().set({
+        'candidate': payload
+      });
     }
 
     createOffer = () => {
-        console.log('Offer')
-        makeCall();
-        /*// https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/createOffer
-        // initiates the creation of SDP
-        this.pc.createOffer({ offerToReceiveVideo: 1 })
-            .then(sdp => {
-                // console.log(JSON.stringify(sdp))
-
-                // set offer sdp as local description
-                this.pc.setLocalDescription(sdp)
-
-                this.sendToPeer('offerOrAnswer', sdp)
-            })*/
+      console.log('Offer')
+      makeCall();
     }
 
     createAnswer = () => {
-
       answerCall();
-
-        /*console.log('Answer')
-        this.pc.createAnswer({ offerToReceiveVideo: 1 })
-            .then(sdp => {
-                // console.log(JSON.stringify(sdp))
-
-                // set answer sdp as local description
-                this.pc.setLocalDescription(sdp)
-
-                this.sendToPeer('offerOrAnswer', sdp)
-            })*/
     }
 
     setRemoteDescription = () => {
-        // retrieve and parse the SDP copied from the remote peer
-        const desc = JSON.parse(this.sdp)
+      // retrieve and parse the SDP copied from the remote peer
+      const desc = JSON.parse(this.sdp)
 
-        // set sdp as remote description
-        this.pc.setRemoteDescription(new RTCSessionDescription(desc))
+      // set sdp as remote description
+      peerConnection.setRemoteDescription(new RTCSessionDescription(desc))
     }
 
     addCandidate = () => {
-        // retrieve and parse the Candidate copied from the remote peer
-        // const candidate = JSON.parse(this.textref.value)
-        // console.log('Adding candidate:', candidate)
+      // retrieve and parse the Candidate copied from the remote peer
+      // const candidate = JSON.parse(this.textref.value)
+      // console.log('Adding candidate:', candidate)
 
-        // add the candidate to the peer connection
-        // this.pc.addIceCandidate(new RTCIceCandidate(candidate))
+      // add the candidate to the peer connection
+      // this.pc.addIceCandidate(new RTCIceCandidate(candidate))
 
-        this.candidates.forEach(candidate => {
-            console.log(JSON.stringify(candidate))
-            this.pc.addIceCandidate(new RTCIceCandidate(candidate))
-        });
+      this.candidates.forEach(candidate => {
+        console.log(JSON.stringify(candidate))
+        peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+      });
     }
-
 
 
     render() {
@@ -296,39 +292,39 @@ export default class VideoTest extends React.Component {
 };
 
 const styles = StyleSheet.create({
-    buttonsContainer: {
-        flexDirection: 'row',
-    },
-    button: {
-        margin: 5,
-        paddingVertical: 10,
-        backgroundColor: 'lightgrey',
-        borderRadius: 5,
-    },
-    textContent: {
-        //fontFamily: 'Sarala',
-        fontSize: 20,
-        textAlign: 'center',
-    },
-    videosContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'center',
-    },
-    rtcView: {
-        width: 100, //dimensions.width,
-        height: 200,//dimensions.height / 2,
-        backgroundColor: 'black',
-    },
-    scrollView: {
-        flex: 1,
-        // flexDirection: 'row',
-        backgroundColor: 'teal',
-        padding: 15,
-    },
-    rtcViewRemote: {
-        width: dimensions.width - 30,
-        height: 200,//dimensions.height / 2,
-        backgroundColor: 'black',
-    }
+  buttonsContainer: {
+    flexDirection: 'row',
+  },
+  button: {
+    margin: 5,
+    paddingVertical: 10,
+    backgroundColor: 'lightgrey',
+    borderRadius: 5,
+  },
+  textContent: {
+    //fontFamily: 'Sarala',
+    fontSize: 20,
+    textAlign: 'center',
+  },
+  videosContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  rtcView: {
+    width: 100, //dimensions.width,
+    height: 200, //dimensions.height / 2,
+    backgroundColor: 'black',
+  },
+  scrollView: {
+    flex: 1,
+    // flexDirection: 'row',
+    backgroundColor: 'teal',
+    padding: 15,
+  },
+  rtcViewRemote: {
+    width: dimensions.width - 30,
+    height: 200, //dimensions.height / 2,
+    backgroundColor: 'black',
+  }
 });
