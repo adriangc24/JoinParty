@@ -43,8 +43,9 @@ export default class HomeScreen extends React.Component {
           <View id={"pageToLoad"}>
             {/* Este condicional determina que pagina sera la que se cargue */}
             {props.activePage == "HomeScreen" && <HomeContent />}
-            {props.activePage == "ProfileScreen" && <ProfileContent />}
             {props.activePage == "VideoTest" && <VideoTest />}
+            {props.activePage == "SearchScreen" && <SearchContent />}
+            {props.activePage == "ProfileScreen" && <ProfileContent />}
           </View>
         </Content>
         <View id={"footerContainer"} style={styles.footerContainer}>
@@ -59,16 +60,17 @@ export default class HomeScreen extends React.Component {
                 <Icon active name="home" style={setIconStyle("HomeScreen")} />
               </Button>
               <Button
+                id={"add"}
                 onPress={() => {
-                  setActivePage("AddScreen"), this.forceUpdate();
+                  setActivePage("VideoTest"), this.forceUpdate();
                 }}
               >
-                <Icon name="add-circle" style={setIconStyle("AddScreen")} />
+                <Icon name="add-circle" style={setIconStyle("VideoTest")} />
               </Button>
               <Button
                 id={"search"}
                 onPress={() => {
-                  setActivePage("VideoTest"), this.forceUpdate();
+                  setActivePage("SearchScreen"), this.forceUpdate();
                 }}
               >
                 <Icon name="search" style={setIconStyle("SearchScreen")} />
