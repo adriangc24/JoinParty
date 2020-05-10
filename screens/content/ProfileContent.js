@@ -28,6 +28,7 @@ import {
   Title,
   Thumbnail,
 } from "native-base";
+var passwordEquals = false;
 var uid,
   uri,
   lastname = "Apellidos",
@@ -37,33 +38,29 @@ var uid,
   password2 = "Repita la contraseña",
   photo = null,
   displayname = "Nombre de usuario";
-var src;
-// Import Admin SDK
-/*var admin = require("firebase-admin");
-// Get a database reference to our posts
-var db = admin.database();
-var ref = db.ref("/users");*/
 
 export default class ProfileContent extends React.Component {
   state = {
+    uid: null,
     name: "Nombre",
     lastname: "Apellidos",
     displayname: "Nombre de usuario",
     email: "Correo electrónico",
     photo: defaultProfile,
+    password: password,
+  };
+
+  textFields = {
+    name: null,
+    lastname: null,
+    displayname: null,
+    password: null,
   };
 
   constructor(props) {
     super(props);
 
     this.changeProfilePhoto = this.changeProfilePhoto.bind(this);
-    /* this.state = {
-      name: "",
-      lastname: "",
-      displayname: "",
-      email: "",
-      photo: defaultProfile,
-    }; */
   }
 
   componentDidMount() {
@@ -73,12 +70,14 @@ export default class ProfileContent extends React.Component {
         var usuario = firebase.database().ref("/users/" + user.uid);
         usuario.once("value").then((snapshot) => {
           var usr = snapshot.val();
+          console.log("-----O " + user.uid);
           console.log("-----O " + usr.email);
           console.log("-----O " + usr.name);
           console.log("-----O " + usr.lastname);
           console.log("-----O " + usr.displayname);
 
           this.setState({
+            uid: user.uid,
             name: usr.name,
             lastname: usr.lastname,
             displayname: usr.displayname,
@@ -106,6 +105,35 @@ export default class ProfileContent extends React.Component {
       { cancelable: false }
     );
   };
+  // Confirm Button
+  confirm = () => {
+    console.log("CONFIRM");
+
+    var user = firebase.auth().currentUser;
+    console.log(this.state.password);
+    var credential = firebase.auth.EmailAuthProvider.credential(
+      firebase.auth().currentUser.email,
+      this.state.password
+    );
+    user
+      .reauthenticateWithCredential(credential)
+      .then(function () {
+        // User re-authenticated.
+        firebase
+          .database()
+          .ref("users/" + this.state.uid)
+          .set({
+            name: this.state.name,
+            lastname: this.state.lastname,
+            displayname: this.state.displayname,
+            photo: this.state.photo,
+          });
+      })
+      .catch(function (error) {
+        console.log(error);
+        Alert.alert("Error: la contraseña no coincide !");
+      });
+  };
 
   changeProfilePhoto = () => {
     console.log("photo clicked");
@@ -129,8 +157,6 @@ export default class ProfileContent extends React.Component {
         console.log("User tapped custom button: ", response.customButton);
       } else {
         const source = { uri: response.uri };
-        src = source;
-        console.log("___________ " + this);
         this.setState({
           photo: source,
         });
@@ -177,22 +203,9 @@ export default class ProfileContent extends React.Component {
                 <TextInput
                   autoCapitalize="none"
                   style={styles.userInput}
-                  placeholder={this.state.email}
-                  ref={"emailInput"}
-                />
-                <TextInput
-                  autoCapitalize="none"
-                  style={styles.userInput}
-                  placeholder={"Contraseña"}
+                  placeholder={this.state.password}
                   secureTextEntry={true}
                   ref={"passwordInput"}
-                />
-                <TextInput
-                  autoCapitalize="none"
-                  style={styles.userInput}
-                  placeholder={"Repita la contraseña"}
-                  secureTextEntry={true}
-                  ref={"passwordInput2"}
                 />
               </View>
               <View id={"buttonConfirm"} styles={styles.buttonConfirmContainer}>
