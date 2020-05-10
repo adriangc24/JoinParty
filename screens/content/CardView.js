@@ -59,19 +59,19 @@ export default class CardView extends React.Component {
         </CardItem>
         <CardItem>
           <Left>
-            <Button transparent>
+            <Button transparent style={styles.buttonLikes}>
               <Icon active name="thumbs-up" />
               <Text>12</Text>
             </Button>
           </Left>
           <Body>
-            <Button transparent>
+            <Button transparent style={styles.buttonComments}>
               <Icon active name="chatbubbles" />
-              <Text>4</Text>
+              <Text style={styles.textComments}>4</Text>
             </Button>
           </Body>
           <Right>
-            <Text>11h ago</Text>
+            <Text>Hace 11 H.</Text>
           </Right>
         </CardItem>
       </Card>
@@ -79,6 +79,15 @@ export default class CardView extends React.Component {
   }
 }
 const styles = StyleSheet.create({
+  buttonComments: {
+    justifyContent: "center",
+  },
+  buttonLikes: {
+    justifyContent: "center",
+  },
+  textComments: {
+    marginLeft: "2%",
+  },
   carousel: {
     alignItems: "center",
     flex: 1,
