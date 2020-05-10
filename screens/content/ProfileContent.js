@@ -37,7 +37,7 @@ var uid,
   password2 = "Repita la contraseña",
   photo = null,
   displayname = "Nombre de usuario";
-var isDbReady = false;
+var src;
 // Import Admin SDK
 /*var admin = require("firebase-admin");
 // Get a database reference to our posts
@@ -52,7 +52,7 @@ export default class ProfileContent extends React.Component {
       lastname: "",
       displayname: "",
       email: "",
-      photo: "",
+      photo: defaultProfile,
     };
   }
   state = {
@@ -117,7 +117,7 @@ export default class ProfileContent extends React.Component {
                 onPress={() => changeProfilePhoto()}
                 style={styles.profileImage}
               >
-                <Thumbnail source={defaultProfile} style={styles.photo} />
+                <Thumbnail source={this.state.photo} style={styles.photo} />
               </TouchableOpacity>
             </View>
             <View id={"form"} style={styles.form}>
@@ -229,12 +229,23 @@ changeProfilePhoto = () => {
       console.log("User tapped custom button: ", response.customButton);
     } else {
       const source = { uri: response.uri };
-      this.setState.bind(this)(() => ({
+      src = source;
+      //setPhoto(source);
+      /*this.setState.bind(this)(() => ({
         photo: source,
-      }));
+      }));*/
     }
   });
+  /*this.setState({
+    photo: src,
+  });*/
 };
+
+/*setPhoto = (source) => {
+  this.setState({
+    photo: source,
+  });
+};*/
 
 const styles = StyleSheet.create({
   container: {
