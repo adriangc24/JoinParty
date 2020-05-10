@@ -222,6 +222,18 @@ export default class RegisterScreen extends React.Component {
   }
 }
 
+function writeUserData(userId, name, email, imageUrl) {
+  firebase
+    .database()
+    .ref("users/" + userId)
+    .set({
+      username: name,
+      email: email,
+      profile_picture: imageUrl,
+      // Add more stuff here
+    });
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

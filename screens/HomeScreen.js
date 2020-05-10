@@ -30,6 +30,8 @@ console.disableYellowBox = true;
 
 var props = {
   activePage: "HomeScreen",
+  email: null,
+  displayName: null,
 };
 
 export default class HomeScreen extends React.Component {
