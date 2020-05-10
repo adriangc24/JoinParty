@@ -1,0 +1,177 @@
+[debug] [2020-05-10T17:36:43.195Z] ----------------------------------------------------------------------
+[debug] [2020-05-10T17:36:43.197Z] Command:       D:\ProgramFiles\nodejs\node.exe C:\Users\Joan\AppData\Local\Yarn\Data\global\node_modules\firebase-tools\lib\bin\firebase.js emulators:start
+[debug] [2020-05-10T17:36:43.197Z] CLI Version:   8.2.0
+[debug] [2020-05-10T17:36:43.197Z] Platform:      win32
+[debug] [2020-05-10T17:36:43.197Z] Node Version:  v12.16.3
+[debug] [2020-05-10T17:36:43.199Z] Time:          Sun May 10 2020 19:36:43 GMT+0200 (GMT+02:00)
+[debug] [2020-05-10T17:36:43.199Z] ----------------------------------------------------------------------
+[debug] [2020-05-10T17:36:43.199Z] 
+[debug] [2020-05-10T17:36:43.206Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[info] i  emulators: Starting emulators: functions, firestore, database, hosting, pubsub
+[debug] [2020-05-10T17:36:45.372Z] [hub] writing locator at C:\Users\Joan\AppData\Local\Temp\hub-joinparty-4e37b.json
+[info] +  hub: emulator hub started at http://localhost:4400
+[warn] !  Your requested "node" version "8" doesn't match your global version "12"
+[info] +  functions: functions emulator started at http://localhost:5001
+[warn] !  firestore: The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration.
+[debug] [2020-05-10T17:36:49.389Z] Ignoring unsupported arg: projectId
+[debug] [2020-05-10T17:36:49.389Z] Ignoring unsupported arg: auto_download
+[debug] [2020-05-10T17:36:49.389Z] Starting firestore emulator with command {"binary":"java","args":["-Duser.language=en","-jar","C:\\Users\\Joan\\.cache\\firebase\\emulators\\cloud-firestore-emulator-v1.11.3.jar","--host","localhost","--port",8080,"--rules","D:\\Projects\\JoinParty\\firestore.rules","--functions_emulator","localhost:5001"],"optionalArgs":["port","webchannel_port","host","rules","functions_emulator","seed_from_export"],"joinArgs":false}
+[info] i  firestore: firestore emulator logging to firestore-debug.log
+[debug] [2020-05-10T17:36:50.639Z] API endpoint: http://localhost:
+[debug] [2020-05-10T17:36:50.640Z] 8080
+If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
+
+   export FIRESTORE_EMULATOR_HOST=localhost:8080
+
+Dev App Server is now running.
+
+
+[info] +  firestore: firestore emulator started at http://localhost:8080
+[info] i  firestore: For testing set FIRESTORE_EMULATOR_HOST=localhost:8080
+[warn] !  database: The emulator will default to allowing all reads and writes. Learn more about this option: https://firebase.google.com/docs/emulator-suite/install_and_configure#security_rules_configuration.
+[debug] [2020-05-10T17:36:52.910Z] Ignoring unsupported arg: projectId
+[debug] [2020-05-10T17:36:52.911Z] Ignoring unsupported arg: auto_download
+[debug] [2020-05-10T17:36:52.911Z] Ignoring unsupported arg: rules
+[debug] [2020-05-10T17:36:52.911Z] Starting database emulator with command {"binary":"java","args":["-Duser.language=en","-jar","C:\\Users\\Joan\\.cache\\firebase\\emulators\\firebase-database-emulator-v4.4.1.jar","--host","localhost","--port",9000,"--functions_emulator_host","localhost","--functions_emulator_port",5001],"optionalArgs":["port","host","functions_emulator_port","functions_emulator_host"],"joinArgs":false}
+[info] i  database: database emulator logging to database-debug.log
+[debug] [2020-05-10T17:36:54.295Z] 19:36:54.293 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+
+[debug] [2020-05-10T17:36:54.464Z] 19:36:54.463 [main] INFO com.firebase.server.forge.App$ - Listening at localhost:9000
+
+[info] +  database: database emulator started at http://localhost:9000
+[info] i  database: For testing set FIREBASE_DATABASE_EMULATOR_HOST=localhost:9000
+[debug] [2020-05-10T17:36:56.924Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/joinparty-4e37b/webApps/-/config  
+ 
+[debug] [2020-05-10T17:36:57.627Z] <<< HTTP RESPONSE 200 {"content-type":"application/json; charset=UTF-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","date":"Sun, 10 May 2020 17:36:57 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3-27=\":443\"; ma=2592000,h3-25=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q049=\":443\"; ma=2592000,h3-Q048=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[info] i  hosting: Serving hosting files from: public
+[info] +  hosting: Local server: http://localhost:5000
+[info] +  hosting: hosting emulator started at http://localhost:5000
+[debug] [2020-05-10T17:36:59.658Z] Ignoring unsupported arg: projectId
+[debug] [2020-05-10T17:36:59.658Z] Ignoring unsupported arg: auto_download
+[debug] [2020-05-10T17:36:59.658Z] Starting pubsub emulator with command {"binary":"C:\\Users\\Joan\\.cache\\firebase\\emulators\\pubsub-emulator-0.1.0\\pubsub-emulator\\bin\\cloud-pubsub-emulator.bat","args":["--host=localhost","--port=8085"],"optionalArgs":["port","host"],"joinArgs":true}
+[info] i  pubsub: pubsub emulator logging to pubsub-debug.log
+[debug] [2020-05-10T17:36:59.823Z] This is the Google Pub/Sub fake.
+
+[debug] [2020-05-10T17:36:59.823Z] Implementation may be incomplete or differ from the real system.
+
+[debug] [2020-05-10T17:36:59.848Z] may 10, 2020 7:36:59 PM com.google.cloud.pubsub.testing.v1.Main main
+INFORMACI�N: IAM integration is disabled. IAM policy methods and ACL checks are not supported
+
+[debug] [2020-05-10T17:37:00.308Z] may 10, 2020 7:37:00 PM io.gapi.emulators.netty.NettyUtil applyJava7LongHostnameWorkaround
+INFORMACI�N: Unable to apply Java 7 long hostname workaround.
+
+[debug] [2020-05-10T17:37:00.471Z] may 10, 2020 7:37:00 PM com.google.cloud.pubsub.testing.v1.Main main
+INFORMACI�N: Server started, listening on 8085
+
+[info] +  pubsub: pubsub emulator started at http://localhost:8085
+[info] i  functions: Watching "D:\Projects\JoinParty\functions" for Cloud Functions...
+[debug] [2020-05-10T17:37:00.684Z] [worker-pool] addWorker(~diagnostic~) 
+[debug] [2020-05-10T17:37:00.684Z] [worker-pool] Adding worker with key ~diagnostic~, total=1 
+[debug] [2020-05-10T17:37:00.684Z] [worker-pool] submitWork(triggerId=) 
+[debug] [2020-05-10T17:37:00.684Z] [worker-~diagnostic~-96f656be-2af2-4463-b27b-a65a0ba523c2]: Assigning socketPath: \\?\pipe\D:\Projects\JoinParty\functions\14752 
+[debug] [2020-05-10T17:37:00.684Z] [worker-~diagnostic~-96f656be-2af2-4463-b27b-a65a0ba523c2]: BUSY 
+[debug] [2020-05-10T17:37:00.760Z] may 10, 2020 7:37:00 PM io.gapi.emulators.grpc.GrpcServer$3 operationComplete
+INFORMACI�N: Adding handler(s) to newly registered Channel.
+
+[debug] [2020-05-10T17:37:01.065Z] [runtime-status] [14752] Functions runtime initialized. {"cwd":"D:\\Projects\\JoinParty\\functions","node_version":"12.16.3"} 
+[debug] [2020-05-10T17:37:01.069Z] [runtime-status] [14752] Disabled runtime features: undefined 
+[debug] [2020-05-10T17:37:01.073Z] [runtime-status] [14752] Resolved module firebase-admin {"declared":true,"installed":true,"version":"8.12.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-admin\\lib\\index.js"} 
+[debug] [2020-05-10T17:37:01.075Z] [runtime-status] [14752] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.6.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-functions\\lib\\index.js"} 
+[debug] [2020-05-10T17:37:01.075Z] [runtime-status] [14752] Set PUBSUB_EMULATOR_HOST to localhost:8085 
+[warn] !  functions: Your GOOGLE_APPLICATION_CREDENTIALS environment variable points to permissionsPrivateKey.json. Non-emulated services will access production using these credentials. Be careful!
+[debug] [2020-05-10T17:37:01.077Z] [runtime-status] [14752] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] 
+[debug] [2020-05-10T17:37:01.158Z] [runtime-status] [14752] Checked functions.config() {"config":{}} 
+[debug] [2020-05-10T17:37:01.159Z] [runtime-status] [14752] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.6.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-functions\\lib\\index.js"} 
+[debug] [2020-05-10T17:37:01.160Z] [runtime-status] [14752] Resolved module firebase-admin {"declared":true,"installed":true,"version":"8.12.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-admin\\lib\\index.js"} 
+[debug] [2020-05-10T17:37:01.161Z] [runtime-status] [14752] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.6.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-functions\\lib\\index.js"} 
+[debug] [2020-05-10T17:37:01.161Z] [runtime-status] [14752] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"8.12.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-admin\\lib\\index.js"}} 
+[debug] [2020-05-10T17:37:01.522Z] [runtime-status] [14752] initializeApp(DEFAULT) {"databaseURL":"https://joinparty-4e37b.firebaseio.com","storageBucket":"joinparty-4e37b.appspot.com","projectId":"joinparty-4e37b","credential":{"implicit":false,"projectId":"joinparty-4e37b","privateKey":"-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCuDJsp1r18sZYX\nNk8g8RXeMaT0mT+vIeXDt/HnXjCln30oO7sNJAMDthRHarlBsA5GtMnrmdWkVShs\nhxO5Fys0+ePsdP4RAjT5uHpRoRZIHXiP7P4kh6faVFGXvHF4eKpt6j7aPdpEAHAb\nOJ0ugyxJIc3lyxPpGTq7R9Xxx6J0qCNTU3EHLK+kyeZ1gSGJwGFtha5BiWNGl69b\nbY34uT+czeD26fY7kAPoVzNhJ2IJqh85styY7a5s1sdVQsmdD0rbtR23ZiDmbTrm\n/ri5lETaMgqZ6/34OWgUDyLn4n+eJRlVum3mcqTeGqrSg4iDhhTdawHP7trRP7IR\nilMGqapvAgMBAAECggEAAiIIReazgzNmggwHeoFMIeE8ubPKgpM26ef3dzz4jDgz\nSLzwXi23Fgcg61lrwhDk11Kyt+y2aUFuetFuGU25Yh0abtBBXfbZ0Q/paPqu94GQ\nYYe5sil62x71+03FUsoOoTLGjURrETLYLN05m1N1V8OFbrjr0UIMdxDM39TMekxX\n/kNCXgqdHyofWB6ePOR/x/jwSZVacsaIWEx59aGF9CsTbt5mdwr1Zv19l0jfROuQ\np8kjg/zAQos+q6DMDjDy9OCq+XT/Y0DBlCl1CTFIBLM9GwjMJsktM8o4oj17bfrX\nGz2vQu/+nZ4rb5nPvda2VXZb5U7awjWP7QUhpm8CAQKBgQDrNALLb2mrrCJNtTqn\no6P8giUFN3oAvTeJIrOrrhyyoe/WshRPuxoyN9y3RJq0IcSQuuzXYl7I2u7lBLgJ\nEfoBAOR8gqc248q45Sm99i77kNS+NJaPsh2Q36JzKHKGC9IocUz+MEEECj8IT5kp\na/aJdlcILUT2UkkwwNbcCPQD7wKBgQC9cFVF07zoQ/Ab6C0it8tPANKwbojc/FvI\n+SuMj0L6dE0AFisa4roplsj8F5M99HjFb4oLl+tBOtFd5IUGQv/LUlQXjuotO1N3\nbGs6lDX/tRCWcL+bCAfPEItVWX4DlCaEOA0yUFczZJeiIRJ4Vs0k+8IIrVpd09Rm\nz2hkGIxBgQKBgQCrgDpFcpC/v/0nYm1JjZXmalNqMWCBp3cWRLp0BbohOtkyWJlc\n5dYdJgSHkbuoezLkQZivGKh6lsE5Ny6mVnhQQQFaFL6u1HyeQ2Mjg54QizPFGX1r\ne/n5CEhg5e5T9cyg9rSoaDEQLBR4D+pjfLjA1QxzBudRIQEDTqmcud6L+wKBgFLH\nqZuPwPbF6UBonoCTS/ZD581NH+VhKUKTD2Kmn6AN/i/RgBiJhsvxpfXy31atY7Dy\n4qHaSuUALMkYuMBZuqlAWprIyq/lQr3m1JyOc2I/3vW+Yxv90Fu9YQV0y8oIjSQt\n0iZwUQqWJGSmiwmm9JH6qXldNyXVEPW0IGvNBk0BAoGBAI6aM/lMxEFEbwAMj5c5\nF1eihrGDNz5qT3q2z+9amYKR/ZEdkPfEFoBBnLeEr6xIdufYHUCL6M4nfcz4Ge+M\nyCAkpAhaYjItnfSBK5xvxjiQ7EAl2uy2pW5+ZLZ/P2TsOZjL06hmD6PdNaveoU83\n4G1YdwsYrMA8zVpWJ3zdRyke\n-----END PRIVATE KEY-----\n","clientEmail":"firebase-adminsdk-tu72o@joinparty-4e37b.iam.gserviceaccount.com","httpClient":{"retry":{"maxRetries":4,"statusCodes":[503],"ioErrorCodes":["ECONNRESET","ETIMEDOUT"],"backOffFactor":0.5,"maxDelayInMillis":60000}}}} 
+[warn] !  ReferenceError: port is not defined
+    at Object.<anonymous> (D:\Projects\JoinParty\functions\index.js:30:27)
+    at Module._compile (internal/modules/cjs/loader.js:1133:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1153:10)
+    at Module.load (internal/modules/cjs/loader.js:977:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:877:14)
+    at Module.require (internal/modules/cjs/loader.js:1019:19)
+    at require (internal/modules/cjs/helpers.js:77:18)
+    at C:\Users\Joan\AppData\Local\Yarn\Data\global\node_modules\firebase-tools\lib\emulator\functionsEmulatorRuntime.js:661:33
+    at Generator.next (<anonymous>)
+    at fulfilled (C:\Users\Joan\AppData\Local\Yarn\Data\global\node_modules\firebase-tools\lib\emulator\functionsEmulatorRuntime.js:5:58)
+[warn] !  We were unable to load your functions code. (see above)
+[debug] [2020-05-10T17:37:02.139Z] [worker-~diagnostic~-96f656be-2af2-4463-b27b-a65a0ba523c2]: exited 
+[debug] [2020-05-10T17:37:02.139Z] [worker-~diagnostic~-96f656be-2af2-4463-b27b-a65a0ba523c2]: FINISHED 
+[debug] [2020-05-10T17:39:18.722Z] File D:\Projects\JoinParty\functions\index.js changed, reloading triggers 
+[debug] [2020-05-10T17:39:19.723Z] [worker-pool] Cleaned up workers for ~diagnostic~: 1 --> 0 
+[debug] [2020-05-10T17:39:19.736Z] [worker-pool] addWorker(~diagnostic~) 
+[debug] [2020-05-10T17:39:19.736Z] [worker-pool] Adding worker with key ~diagnostic~, total=1 
+[debug] [2020-05-10T17:39:19.736Z] [worker-pool] submitWork(triggerId=) 
+[debug] [2020-05-10T17:39:19.736Z] [worker-~diagnostic~-43854fff-f969-491a-8986-f71dc8890055]: Assigning socketPath: \\?\pipe\D:\Projects\JoinParty\functions\5140 
+[debug] [2020-05-10T17:39:19.736Z] [worker-~diagnostic~-43854fff-f969-491a-8986-f71dc8890055]: BUSY 
+[debug] [2020-05-10T17:39:20.123Z] [runtime-status] [5140] Functions runtime initialized. {"cwd":"D:\\Projects\\JoinParty\\functions","node_version":"12.16.3"} 
+[debug] [2020-05-10T17:39:20.125Z] [runtime-status] [5140] Disabled runtime features: undefined 
+[debug] [2020-05-10T17:39:20.130Z] [runtime-status] [5140] Resolved module firebase-admin {"declared":true,"installed":true,"version":"8.12.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-admin\\lib\\index.js"} 
+[debug] [2020-05-10T17:39:20.133Z] [runtime-status] [5140] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.6.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-functions\\lib\\index.js"} 
+[debug] [2020-05-10T17:39:20.134Z] [runtime-status] [5140] Set PUBSUB_EMULATOR_HOST to localhost:8085 
+[warn] !  functions: Your GOOGLE_APPLICATION_CREDENTIALS environment variable points to permissionsPrivateKey.json. Non-emulated services will access production using these credentials. Be careful!
+[debug] [2020-05-10T17:39:20.135Z] [runtime-status] [5140] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] 
+[debug] [2020-05-10T17:39:20.176Z] [runtime-status] [5140] Checked functions.config() {"config":{}} 
+[debug] [2020-05-10T17:39:20.177Z] [runtime-status] [5140] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.6.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-functions\\lib\\index.js"} 
+[debug] [2020-05-10T17:39:20.179Z] [runtime-status] [5140] Resolved module firebase-admin {"declared":true,"installed":true,"version":"8.12.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-admin\\lib\\index.js"} 
+[debug] [2020-05-10T17:39:20.181Z] [runtime-status] [5140] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.6.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-functions\\lib\\index.js"} 
+[debug] [2020-05-10T17:39:20.182Z] [runtime-status] [5140] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"8.12.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-admin\\lib\\index.js"}} 
+[debug] [2020-05-10T17:39:20.407Z] [runtime-status] [5140] initializeApp(DEFAULT) {"databaseURL":"https://joinparty-4e37b.firebaseio.com","storageBucket":"joinparty-4e37b.appspot.com","projectId":"joinparty-4e37b","credential":{"implicit":false,"projectId":"joinparty-4e37b","privateKey":"-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCuDJsp1r18sZYX\nNk8g8RXeMaT0mT+vIeXDt/HnXjCln30oO7sNJAMDthRHarlBsA5GtMnrmdWkVShs\nhxO5Fys0+ePsdP4RAjT5uHpRoRZIHXiP7P4kh6faVFGXvHF4eKpt6j7aPdpEAHAb\nOJ0ugyxJIc3lyxPpGTq7R9Xxx6J0qCNTU3EHLK+kyeZ1gSGJwGFtha5BiWNGl69b\nbY34uT+czeD26fY7kAPoVzNhJ2IJqh85styY7a5s1sdVQsmdD0rbtR23ZiDmbTrm\n/ri5lETaMgqZ6/34OWgUDyLn4n+eJRlVum3mcqTeGqrSg4iDhhTdawHP7trRP7IR\nilMGqapvAgMBAAECggEAAiIIReazgzNmggwHeoFMIeE8ubPKgpM26ef3dzz4jDgz\nSLzwXi23Fgcg61lrwhDk11Kyt+y2aUFuetFuGU25Yh0abtBBXfbZ0Q/paPqu94GQ\nYYe5sil62x71+03FUsoOoTLGjURrETLYLN05m1N1V8OFbrjr0UIMdxDM39TMekxX\n/kNCXgqdHyofWB6ePOR/x/jwSZVacsaIWEx59aGF9CsTbt5mdwr1Zv19l0jfROuQ\np8kjg/zAQos+q6DMDjDy9OCq+XT/Y0DBlCl1CTFIBLM9GwjMJsktM8o4oj17bfrX\nGz2vQu/+nZ4rb5nPvda2VXZb5U7awjWP7QUhpm8CAQKBgQDrNALLb2mrrCJNtTqn\no6P8giUFN3oAvTeJIrOrrhyyoe/WshRPuxoyN9y3RJq0IcSQuuzXYl7I2u7lBLgJ\nEfoBAOR8gqc248q45Sm99i77kNS+NJaPsh2Q36JzKHKGC9IocUz+MEEECj8IT5kp\na/aJdlcILUT2UkkwwNbcCPQD7wKBgQC9cFVF07zoQ/Ab6C0it8tPANKwbojc/FvI\n+SuMj0L6dE0AFisa4roplsj8F5M99HjFb4oLl+tBOtFd5IUGQv/LUlQXjuotO1N3\nbGs6lDX/tRCWcL+bCAfPEItVWX4DlCaEOA0yUFczZJeiIRJ4Vs0k+8IIrVpd09Rm\nz2hkGIxBgQKBgQCrgDpFcpC/v/0nYm1JjZXmalNqMWCBp3cWRLp0BbohOtkyWJlc\n5dYdJgSHkbuoezLkQZivGKh6lsE5Ny6mVnhQQQFaFL6u1HyeQ2Mjg54QizPFGX1r\ne/n5CEhg5e5T9cyg9rSoaDEQLBR4D+pjfLjA1QxzBudRIQEDTqmcud6L+wKBgFLH\nqZuPwPbF6UBonoCTS/ZD581NH+VhKUKTD2Kmn6AN/i/RgBiJhsvxpfXy31atY7Dy\n4qHaSuUALMkYuMBZuqlAWprIyq/lQr3m1JyOc2I/3vW+Yxv90Fu9YQV0y8oIjSQt\n0iZwUQqWJGSmiwmm9JH6qXldNyXVEPW0IGvNBk0BAoGBAI6aM/lMxEFEbwAMj5c5\nF1eihrGDNz5qT3q2z+9amYKR/ZEdkPfEFoBBnLeEr6xIdufYHUCL6M4nfcz4Ge+M\nyCAkpAhaYjItnfSBK5xvxjiQ7EAl2uy2pW5+ZLZ/P2TsOZjL06hmD6PdNaveoU83\n4G1YdwsYrMA8zVpWJ3zdRyke\n-----END PRIVATE KEY-----\n","clientEmail":"firebase-adminsdk-tu72o@joinparty-4e37b.iam.gserviceaccount.com","httpClient":{"retry":{"maxRetries":4,"statusCodes":[503],"ioErrorCodes":["ECONNRESET","ETIMEDOUT"],"backOffFactor":0.5,"maxDelayInMillis":60000}}}} 
+[info] +  functions[addMessage]: http function initialized (http://localhost:5001/joinparty-4e37b/us-central1/addMessage).
+[info] +  functions[app]: http function initialized (http://localhost:5001/joinparty-4e37b/us-central1/app).
+[info] >  Example app listening on port 8080! {"user":"Example app listening on port 8080!"}
+[debug] [2020-05-10T17:39:20.904Z] [worker-~diagnostic~-43854fff-f969-491a-8986-f71dc8890055]: IDLE 
+[debug] [2020-05-10T17:41:28.328Z] File D:\Projects\JoinParty\functions\index.js changed, reloading triggers 
+[debug] [2020-05-10T17:41:29.342Z] [worker-pool] Shutting down IDLE worker (~diagnostic~) 
+[debug] [2020-05-10T17:41:29.342Z] [worker-~diagnostic~-43854fff-f969-491a-8986-f71dc8890055]: FINISHING 
+[debug] [2020-05-10T17:41:29.358Z] [worker-pool] addWorker(~diagnostic~) 
+[debug] [2020-05-10T17:41:29.358Z] [worker-pool] Adding worker with key ~diagnostic~, total=2 
+[debug] [2020-05-10T17:41:29.359Z] [worker-pool] submitWork(triggerId=) 
+[debug] [2020-05-10T17:41:29.359Z] [worker-~diagnostic~-e3e0d521-d156-4178-a859-3e6bf0b184b4]: Assigning socketPath: \\?\pipe\D:\Projects\JoinParty\functions\15180 
+[debug] [2020-05-10T17:41:29.359Z] [worker-~diagnostic~-e3e0d521-d156-4178-a859-3e6bf0b184b4]: BUSY 
+[debug] [2020-05-10T17:41:29.359Z] [worker-~diagnostic~-43854fff-f969-491a-8986-f71dc8890055]: exited 
+[debug] [2020-05-10T17:41:29.360Z] [worker-~diagnostic~-43854fff-f969-491a-8986-f71dc8890055]: FINISHED 
+[debug] [2020-05-10T17:41:29.753Z] [runtime-status] [15180] Functions runtime initialized. {"cwd":"D:\\Projects\\JoinParty\\functions","node_version":"12.16.3"} 
+[debug] [2020-05-10T17:41:29.757Z] [runtime-status] [15180] Disabled runtime features: undefined 
+[debug] [2020-05-10T17:41:29.762Z] [runtime-status] [15180] Resolved module firebase-admin {"declared":true,"installed":true,"version":"8.12.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-admin\\lib\\index.js"} 
+[debug] [2020-05-10T17:41:29.763Z] [runtime-status] [15180] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.6.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-functions\\lib\\index.js"} 
+[debug] [2020-05-10T17:41:29.764Z] [runtime-status] [15180] Set PUBSUB_EMULATOR_HOST to localhost:8085 
+[warn] !  functions: Your GOOGLE_APPLICATION_CREDENTIALS environment variable points to permissionsPrivateKey.json. Non-emulated services will access production using these credentials. Be careful!
+[debug] [2020-05-10T17:41:29.765Z] [runtime-status] [15180] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] 
+[debug] [2020-05-10T17:41:29.802Z] [runtime-status] [15180] Checked functions.config() {"config":{}} 
+[debug] [2020-05-10T17:41:29.803Z] [runtime-status] [15180] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.6.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-functions\\lib\\index.js"} 
+[debug] [2020-05-10T17:41:29.804Z] [runtime-status] [15180] Resolved module firebase-admin {"declared":true,"installed":true,"version":"8.12.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-admin\\lib\\index.js"} 
+[debug] [2020-05-10T17:41:29.805Z] [runtime-status] [15180] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.6.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-functions\\lib\\index.js"} 
+[debug] [2020-05-10T17:41:29.805Z] [runtime-status] [15180] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"8.12.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-admin\\lib\\index.js"}} 
+[debug] [2020-05-10T17:41:30.000Z] [runtime-status] [15180] initializeApp(DEFAULT) {"databaseURL":"https://joinparty-4e37b.firebaseio.com","storageBucket":"joinparty-4e37b.appspot.com","projectId":"joinparty-4e37b","credential":{"implicit":false,"projectId":"joinparty-4e37b","privateKey":"-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCuDJsp1r18sZYX\nNk8g8RXeMaT0mT+vIeXDt/HnXjCln30oO7sNJAMDthRHarlBsA5GtMnrmdWkVShs\nhxO5Fys0+ePsdP4RAjT5uHpRoRZIHXiP7P4kh6faVFGXvHF4eKpt6j7aPdpEAHAb\nOJ0ugyxJIc3lyxPpGTq7R9Xxx6J0qCNTU3EHLK+kyeZ1gSGJwGFtha5BiWNGl69b\nbY34uT+czeD26fY7kAPoVzNhJ2IJqh85styY7a5s1sdVQsmdD0rbtR23ZiDmbTrm\n/ri5lETaMgqZ6/34OWgUDyLn4n+eJRlVum3mcqTeGqrSg4iDhhTdawHP7trRP7IR\nilMGqapvAgMBAAECggEAAiIIReazgzNmggwHeoFMIeE8ubPKgpM26ef3dzz4jDgz\nSLzwXi23Fgcg61lrwhDk11Kyt+y2aUFuetFuGU25Yh0abtBBXfbZ0Q/paPqu94GQ\nYYe5sil62x71+03FUsoOoTLGjURrETLYLN05m1N1V8OFbrjr0UIMdxDM39TMekxX\n/kNCXgqdHyofWB6ePOR/x/jwSZVacsaIWEx59aGF9CsTbt5mdwr1Zv19l0jfROuQ\np8kjg/zAQos+q6DMDjDy9OCq+XT/Y0DBlCl1CTFIBLM9GwjMJsktM8o4oj17bfrX\nGz2vQu/+nZ4rb5nPvda2VXZb5U7awjWP7QUhpm8CAQKBgQDrNALLb2mrrCJNtTqn\no6P8giUFN3oAvTeJIrOrrhyyoe/WshRPuxoyN9y3RJq0IcSQuuzXYl7I2u7lBLgJ\nEfoBAOR8gqc248q45Sm99i77kNS+NJaPsh2Q36JzKHKGC9IocUz+MEEECj8IT5kp\na/aJdlcILUT2UkkwwNbcCPQD7wKBgQC9cFVF07zoQ/Ab6C0it8tPANKwbojc/FvI\n+SuMj0L6dE0AFisa4roplsj8F5M99HjFb4oLl+tBOtFd5IUGQv/LUlQXjuotO1N3\nbGs6lDX/tRCWcL+bCAfPEItVWX4DlCaEOA0yUFczZJeiIRJ4Vs0k+8IIrVpd09Rm\nz2hkGIxBgQKBgQCrgDpFcpC/v/0nYm1JjZXmalNqMWCBp3cWRLp0BbohOtkyWJlc\n5dYdJgSHkbuoezLkQZivGKh6lsE5Ny6mVnhQQQFaFL6u1HyeQ2Mjg54QizPFGX1r\ne/n5CEhg5e5T9cyg9rSoaDEQLBR4D+pjfLjA1QxzBudRIQEDTqmcud6L+wKBgFLH\nqZuPwPbF6UBonoCTS/ZD581NH+VhKUKTD2Kmn6AN/i/RgBiJhsvxpfXy31atY7Dy\n4qHaSuUALMkYuMBZuqlAWprIyq/lQr3m1JyOc2I/3vW+Yxv90Fu9YQV0y8oIjSQt\n0iZwUQqWJGSmiwmm9JH6qXldNyXVEPW0IGvNBk0BAoGBAI6aM/lMxEFEbwAMj5c5\nF1eihrGDNz5qT3q2z+9amYKR/ZEdkPfEFoBBnLeEr6xIdufYHUCL6M4nfcz4Ge+M\nyCAkpAhaYjItnfSBK5xvxjiQ7EAl2uy2pW5+ZLZ/P2TsOZjL06hmD6PdNaveoU83\n4G1YdwsYrMA8zVpWJ3zdRyke\n-----END PRIVATE KEY-----\n","clientEmail":"firebase-adminsdk-tu72o@joinparty-4e37b.iam.gserviceaccount.com","httpClient":{"retry":{"maxRetries":4,"statusCodes":[503],"ioErrorCodes":["ECONNRESET","ETIMEDOUT"],"backOffFactor":0.5,"maxDelayInMillis":60000}}}} 
+[debug] [2020-05-10T17:41:30.377Z] [worker-~diagnostic~-e3e0d521-d156-4178-a859-3e6bf0b184b4]: IDLE 
+[info] >  Example app listening on port 12647! {"user":"Example app listening on port 12647!"}
+[debug] [2020-05-10T17:43:36.699Z] File D:\Projects\JoinParty\functions\index.js changed, reloading triggers 
+[debug] [2020-05-10T17:43:37.699Z] [worker-pool] Shutting down IDLE worker (~diagnostic~) 
+[debug] [2020-05-10T17:43:37.700Z] [worker-~diagnostic~-e3e0d521-d156-4178-a859-3e6bf0b184b4]: FINISHING 
+[debug] [2020-05-10T17:43:37.700Z] [worker-pool] Cleaned up workers for ~diagnostic~: 2 --> 1 
+[debug] [2020-05-10T17:43:37.714Z] [worker-pool] addWorker(~diagnostic~) 
+[debug] [2020-05-10T17:43:37.714Z] [worker-pool] Adding worker with key ~diagnostic~, total=2 
+[debug] [2020-05-10T17:43:37.714Z] [worker-pool] submitWork(triggerId=) 
+[debug] [2020-05-10T17:43:37.714Z] [worker-~diagnostic~-ea823e00-a4b7-4b8a-b486-e5c0bd5494bd]: Assigning socketPath: \\?\pipe\D:\Projects\JoinParty\functions\5044 
+[debug] [2020-05-10T17:43:37.714Z] [worker-~diagnostic~-ea823e00-a4b7-4b8a-b486-e5c0bd5494bd]: BUSY 
+[debug] [2020-05-10T17:43:37.715Z] [worker-~diagnostic~-e3e0d521-d156-4178-a859-3e6bf0b184b4]: exited 
+[debug] [2020-05-10T17:43:37.715Z] [worker-~diagnostic~-e3e0d521-d156-4178-a859-3e6bf0b184b4]: FINISHED 
+[debug] [2020-05-10T17:43:38.142Z] [runtime-status] [5044] Functions runtime initialized. {"cwd":"D:\\Projects\\JoinParty\\functions","node_version":"12.16.3"} 
+[debug] [2020-05-10T17:43:38.147Z] [runtime-status] [5044] Disabled runtime features: undefined 
+[debug] [2020-05-10T17:43:38.152Z] [runtime-status] [5044] Resolved module firebase-admin {"declared":true,"installed":true,"version":"8.12.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-admin\\lib\\index.js"} 
+[debug] [2020-05-10T17:43:38.154Z] [runtime-status] [5044] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.6.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-functions\\lib\\index.js"} 
+[debug] [2020-05-10T17:43:38.154Z] [runtime-status] [5044] Set PUBSUB_EMULATOR_HOST to localhost:8085 
+[warn] !  functions: Your GOOGLE_APPLICATION_CREDENTIALS environment variable points to permissionsPrivateKey.json. Non-emulated services will access production using these credentials. Be careful!
+[debug] [2020-05-10T17:43:38.156Z] [runtime-status] [5044] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] 
+[debug] [2020-05-10T17:43:38.199Z] [runtime-status] [5044] Checked functions.config() {"config":{}} 
+[debug] [2020-05-10T17:43:38.200Z] [runtime-status] [5044] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.6.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-functions\\lib\\index.js"} 
+[debug] [2020-05-10T17:43:38.201Z] [runtime-status] [5044] Resolved module firebase-admin {"declared":true,"installed":true,"version":"8.12.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-admin\\lib\\index.js"} 
+[debug] [2020-05-10T17:43:38.202Z] [runtime-status] [5044] Resolved module firebase-functions {"declared":true,"installed":true,"version":"3.6.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-functions\\lib\\index.js"} 
+[debug] [2020-05-10T17:43:38.202Z] [runtime-status] [5044] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"8.12.1","resolution":"D:\\Projects\\JoinParty\\functions\\node_modules\\firebase-admin\\lib\\index.js"}} 
+[debug] [2020-05-10T17:43:38.391Z] [runtime-status] [5044] initializeApp(DEFAULT) {"databaseURL":"https://joinparty-4e37b.firebaseio.com","storageBucket":"joinparty-4e37b.appspot.com","projectId":"joinparty-4e37b","credential":{"implicit":false,"projectId":"joinparty-4e37b","privateKey":"-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCuDJsp1r18sZYX\nNk8g8RXeMaT0mT+vIeXDt/HnXjCln30oO7sNJAMDthRHarlBsA5GtMnrmdWkVShs\nhxO5Fys0+ePsdP4RAjT5uHpRoRZIHXiP7P4kh6faVFGXvHF4eKpt6j7aPdpEAHAb\nOJ0ugyxJIc3lyxPpGTq7R9Xxx6J0qCNTU3EHLK+kyeZ1gSGJwGFtha5BiWNGl69b\nbY34uT+czeD26fY7kAPoVzNhJ2IJqh85styY7a5s1sdVQsmdD0rbtR23ZiDmbTrm\n/ri5lETaMgqZ6/34OWgUDyLn4n+eJRlVum3mcqTeGqrSg4iDhhTdawHP7trRP7IR\nilMGqapvAgMBAAECggEAAiIIReazgzNmggwHeoFMIeE8ubPKgpM26ef3dzz4jDgz\nSLzwXi23Fgcg61lrwhDk11Kyt+y2aUFuetFuGU25Yh0abtBBXfbZ0Q/paPqu94GQ\nYYe5sil62x71+03FUsoOoTLGjURrETLYLN05m1N1V8OFbrjr0UIMdxDM39TMekxX\n/kNCXgqdHyofWB6ePOR/x/jwSZVacsaIWEx59aGF9CsTbt5mdwr1Zv19l0jfROuQ\np8kjg/zAQos+q6DMDjDy9OCq+XT/Y0DBlCl1CTFIBLM9GwjMJsktM8o4oj17bfrX\nGz2vQu/+nZ4rb5nPvda2VXZb5U7awjWP7QUhpm8CAQKBgQDrNALLb2mrrCJNtTqn\no6P8giUFN3oAvTeJIrOrrhyyoe/WshRPuxoyN9y3RJq0IcSQuuzXYl7I2u7lBLgJ\nEfoBAOR8gqc248q45Sm99i77kNS+NJaPsh2Q36JzKHKGC9IocUz+MEEECj8IT5kp\na/aJdlcILUT2UkkwwNbcCPQD7wKBgQC9cFVF07zoQ/Ab6C0it8tPANKwbojc/FvI\n+SuMj0L6dE0AFisa4roplsj8F5M99HjFb4oLl+tBOtFd5IUGQv/LUlQXjuotO1N3\nbGs6lDX/tRCWcL+bCAfPEItVWX4DlCaEOA0yUFczZJeiIRJ4Vs0k+8IIrVpd09Rm\nz2hkGIxBgQKBgQCrgDpFcpC/v/0nYm1JjZXmalNqMWCBp3cWRLp0BbohOtkyWJlc\n5dYdJgSHkbuoezLkQZivGKh6lsE5Ny6mVnhQQQFaFL6u1HyeQ2Mjg54QizPFGX1r\ne/n5CEhg5e5T9cyg9rSoaDEQLBR4D+pjfLjA1QxzBudRIQEDTqmcud6L+wKBgFLH\nqZuPwPbF6UBonoCTS/ZD581NH+VhKUKTD2Kmn6AN/i/RgBiJhsvxpfXy31atY7Dy\n4qHaSuUALMkYuMBZuqlAWprIyq/lQr3m1JyOc2I/3vW+Yxv90Fu9YQV0y8oIjSQt\n0iZwUQqWJGSmiwmm9JH6qXldNyXVEPW0IGvNBk0BAoGBAI6aM/lMxEFEbwAMj5c5\nF1eihrGDNz5qT3q2z+9amYKR/ZEdkPfEFoBBnLeEr6xIdufYHUCL6M4nfcz4Ge+M\nyCAkpAhaYjItnfSBK5xvxjiQ7EAl2uy2pW5+ZLZ/P2TsOZjL06hmD6PdNaveoU83\n4G1YdwsYrMA8zVpWJ3zdRyke\n-----END PRIVATE KEY-----\n","clientEmail":"firebase-adminsdk-tu72o@joinparty-4e37b.iam.gserviceaccount.com","httpClient":{"retry":{"maxRetries":4,"statusCodes":[503],"ioErrorCodes":["ECONNRESET","ETIMEDOUT"],"backOffFactor":0.5,"maxDelayInMillis":60000}}}} 
+[debug] [2020-05-10T17:43:38.795Z] [worker-~diagnostic~-ea823e00-a4b7-4b8a-b486-e5c0bd5494bd]: IDLE 
+[info] >  Example app listening on port 5005! {"user":"Example app listening on port 5005!"}

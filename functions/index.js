@@ -14,13 +14,13 @@ admin.initializeApp({
 
 const firebase = require('firebase');
 firebase.initializeApp({
-  apiKey: process.env.apiKey,                             
-  applicationId: process.env.applicationId,      
-  projectId: process.env.projectId,               
-  authDomain: process.env.authDomain,  
+  apiKey: process.env.apiKey,
+  applicationId: process.env.applicationId,
+  projectId: process.env.projectId,
+  authDomain: process.env.authDomain,
   databaseURL: "https://joinparty-4e37b.firebaseio.com",
   storageBucket: process.env.storageBucket,
-  messagingSenderId: process.env.messagingSenderId 
+  messagingSenderId: process.env.messagingSenderId
 });
 
 const db = admin.firestore();

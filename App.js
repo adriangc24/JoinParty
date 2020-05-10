@@ -28,7 +28,7 @@ import backgroundImage from "./assets/loginBackground.jpg";
 import logo from "./assets/logo.png";
 var env = require("./env.json");
 
-firebase.initializeApp({
+const app = firebase.initializeApp({
   apiKey: env.apiKey,
   applicationId: env.applicationId,
   projectId: env.projectId,
@@ -38,6 +38,8 @@ firebase.initializeApp({
   messagingSenderId: env.messagingSenderId,
   appId: env.appId,
 });
+
+export const db = app.database();
 
 const AppStack = createStackNavigator(
   {

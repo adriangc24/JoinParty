@@ -16,6 +16,7 @@ import {
     StatusBar,
     TouchableOpacity,
     Dimensions,
+    Alert
 } from 'react-native';
 
 import {
@@ -29,9 +30,39 @@ import {
     registerGlobals
 } from 'react-native-webrtc';
 
-import io from 'socket.io-client'
+import {  db } from "./../../App";
 
-const dimensions = Dimensions.get('window')
+const dimensions = Dimensions.get('window');
+const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
+const peerConnection = new RTCPeerConnection(configuration);
+
+async function makeCall() {
+    db.ref("events").on("child_added" , async snapshot => {
+        if (snapshot.val().answer) {
+            const remoteDesc = new RTCSessionDescription(snapshot.val().answer);
+            await peerConnection.setRemoteDescription(remoteDesc);
+            console.log("peer connection okay");
+        }
+    });
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    db.ref("events").set({
+      "offer": offer
+    });
+}
+
+async function answerCall() {
+  let ayyy = db.ref("events/offer");
+
+  ayyy.once("value").then(async snapshot => {
+    let offer = snapshot.val();
+    peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    db.ref("events").push().set({'answer': answer});
+
+  });
+}
 
 export default class VideoTest extends React.Component {
     constructor(props) {
@@ -49,39 +80,8 @@ export default class VideoTest extends React.Component {
 
     componentDidMount = () => {
 
-        this.socket = io.connect(
-            'http://192.168.1.35:3000/webrtcPeer',
-            {
-                path: '/io/webrtc',
-                query: {}
-            }
-        )
-
-        this.socket.on('connection-success', success => {
-            console.log(success)
-        })
-
-        this.socket.on('offerOrAnswer', (sdp) => {
-
-            this.sdp = JSON.stringify(sdp)
-
-            // set sdp as remote description
-            this.pc.setRemoteDescription(new RTCSessionDescription(sdp))
-        })
-
-        this.socket.on('candidate', (candidate) => {
-            // console.log('From Peer... ', JSON.stringify(candidate))
-            // this.candidates = [...this.candidates, candidate]
-            this.pc.addIceCandidate(new RTCIceCandidate(candidate))
-        })
-
         const pc_config = {
             "iceServers": [
-                // {
-                //   urls: 'stun:[STUN_IP]:[PORT]',
-                //   'credentials': '[YOR CREDENTIALS]',
-                //   'username': '[USERNAME]'
-                // },
                 {
                     urls: 'stun:stun.l.google.com:19302'
                 }
@@ -154,16 +154,13 @@ export default class VideoTest extends React.Component {
         });
     }
     sendToPeer = (messageType, payload) => {
-        this.socket.emit(messageType, {
-            socketID: this.socket.id,
-            payload
-        })
+
     }
 
     createOffer = () => {
         console.log('Offer')
-
-        // https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/createOffer
+        makeCall();
+        /*// https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/createOffer
         // initiates the creation of SDP
         this.pc.createOffer({ offerToReceiveVideo: 1 })
             .then(sdp => {
@@ -173,11 +170,14 @@ export default class VideoTest extends React.Component {
                 this.pc.setLocalDescription(sdp)
 
                 this.sendToPeer('offerOrAnswer', sdp)
-            })
+            })*/
     }
 
     createAnswer = () => {
-        console.log('Answer')
+
+      answerCall();
+
+        /*console.log('Answer')
         this.pc.createAnswer({ offerToReceiveVideo: 1 })
             .then(sdp => {
                 // console.log(JSON.stringify(sdp))
@@ -186,7 +186,7 @@ export default class VideoTest extends React.Component {
                 this.pc.setLocalDescription(sdp)
 
                 this.sendToPeer('offerOrAnswer', sdp)
-            })
+            })*/
     }
 
     setRemoteDescription = () => {
@@ -210,6 +210,7 @@ export default class VideoTest extends React.Component {
             this.pc.addIceCandidate(new RTCIceCandidate(candidate))
         });
     }
+
 
 
     render() {
