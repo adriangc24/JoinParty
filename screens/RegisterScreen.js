@@ -34,7 +34,10 @@ export default class RegisterScreen extends React.Component {
     this.state = {
       displayName: "",
       email: "",
+      name: "",
+      lastname: "",
       password: "",
+      password2: "",
       isLoading: false,
       errorMessage: null,
     };
@@ -73,7 +76,7 @@ export default class RegisterScreen extends React.Component {
       this.state.password2 == undefined ||
       this.state.name == undefined ||
       this.state.lastname == undefined ||
-      this.state.email == undefined
+      this.state.displayName == undefined
     ) {
       Alert.alert("Error: 1 o más campos vacíos !");
     } else if (!(password == password2)) {
@@ -92,31 +95,20 @@ export default class RegisterScreen extends React.Component {
       firebase
         .auth()
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
-        .then((res) => {
-          firebase
-            .auth()
-            .currentUser.sendEmailVerification(actionCodeSettings)
-            .then(function () {
-              console.log("-- Email sent succesful");
-            })
-            .catch(function (error) {
-              console.log("-- Email sent error");
-            });
-
-          res.user.updateProfile({
-            displayName: this.state.displayName,
-          });
-          console.log("User registered successfully!");
-          this.setState({
-            isLoading: false,
-            displayName: "",
-            email: "",
-            password: "",
-          });
-
+        .then((u) => {
+          console.log("calling writeUserData");
+          writeUserData(
+            u.user.uid,
+            this.state.name,
+            this.state.lastname,
+            this.state.displayName,
+            this.state.email
+          );
           this.props.navigation.navigate("Home");
         })
-        .catch((error) => this.setState({ errorMessage: error.message }));
+        .catch((error) => {
+          console.log(error);
+        });
     }
   };
 
@@ -220,6 +212,33 @@ export default class RegisterScreen extends React.Component {
       </TouchableWithoutFeedback>
     );
   }
+}
+
+function writeUserData(userId, name, lastname, displayname, email) {
+  console.log(
+    "---- " +
+      userId +
+      " " +
+      name +
+      " " +
+      lastname +
+      " " +
+      displayname +
+      " " +
+      email
+  );
+  firebase
+    .database()
+    .ref("users/" + userId)
+    .set({
+      name: name,
+      lastname: lastname,
+      displayname: displayname,
+      email: email,
+
+      //profile_picture: imageUrl,
+      // Add more stuff here
+    });
 }
 
 const styles = StyleSheet.create({

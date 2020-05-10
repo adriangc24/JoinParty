@@ -51,26 +51,27 @@ export default class CardView extends React.Component {
         <CardItem cardBody>
           <Image
             source={{
-              uri: "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
+              uri:
+                "https://firebasestorage.googleapis.com/v0/b/joinparty-4e37b.appspot.com/o/posts%2Fparty.gif?alt=media&token=b42c5c17-3e9a-45ce-8966-08bfe6c7792f",
             }}
             style={{ height: 200, width: null, flex: 1 }}
           />
         </CardItem>
         <CardItem>
           <Left>
-            <Button transparent>
+            <Button transparent style={styles.buttonLikes}>
               <Icon active name="thumbs-up" />
               <Text>12</Text>
             </Button>
           </Left>
           <Body>
-            <Button transparent>
+            <Button transparent style={styles.buttonComments}>
               <Icon active name="chatbubbles" />
-              <Text>4</Text>
+              <Text style={styles.textComments}>4</Text>
             </Button>
           </Body>
           <Right>
-            <Text>11h ago</Text>
+            <Text>Hace 11 H.</Text>
           </Right>
         </CardItem>
       </Card>
@@ -78,6 +79,15 @@ export default class CardView extends React.Component {
   }
 }
 const styles = StyleSheet.create({
+  buttonComments: {
+    justifyContent: "center",
+  },
+  buttonLikes: {
+    justifyContent: "center",
+  },
+  textComments: {
+    marginLeft: "2%",
+  },
   carousel: {
     alignItems: "center",
     flex: 1,

@@ -42,7 +42,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       List<ReactPackage> packages = new PackageList(this).getPackages();
       packages.add(new ModuleRegistryAdapter(mModuleRegistryProvider));
-      packages.add(new WebRTCModulePackage()); // WebRTC
+      //packages.add(new WebRTCModulePackage()); // WebRTC
       return packages;
     }
 
