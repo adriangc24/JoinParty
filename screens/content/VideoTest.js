@@ -44,10 +44,10 @@ const peerConnection = new RTCPeerConnection(configuration);
 
 async function makeCall() {
   db.ref("events").on("child_added", async snapshot => {
-    if (snapshot.val().answer) {
+      if (snapshot.val().answer) {
       const remoteDesc = new RTCSessionDescription(snapshot.val().answer);
       await peerConnection.setRemoteDescription(remoteDesc);
-      console.log("peer connection okay");
+      console.log("got peer connection");
     }
   });
   const offer = await peerConnection.createOffer();
@@ -60,7 +60,7 @@ async function makeCall() {
 async function answerCall() {
   let ayyy = db.ref("events/offer");
 
-  ayyy.once("value").then(async (snapshot) => {
+  ayyy.once("value").then(async snapshot => {
     let offer = snapshot.val();
     peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
     const answer = await peerConnection.createAnswer();
@@ -68,6 +68,7 @@ async function answerCall() {
     db.ref("events").push().set({
       'answer': answer
     });
+    console.log("sadasdsa");
   });
 }
 
@@ -88,10 +89,10 @@ export default class VideoTest extends React.Component {
     componentDidMount = () => {
 
       db.ref("candidates").on("child_added", async snapshot => {
-        var lel = snapshot.val().candidate;
+        var lel = snapshot.val().iceCandidate;
         if (lel) {
           try {
-            await peerConnection.addIceCandidate(snapshot.candidate.candidate);
+            await peerConnection.addIceCandidate(lel);
           } catch (e) {
             console.error('Error adding received ice candidate', e);
           }
@@ -104,7 +105,6 @@ export default class VideoTest extends React.Component {
               console.log('YOOO SOY GIGANTEEE')
           }
       });
-
 
       peerConnection.onicecandidate = (e) => {
         // send the candidates to the remote peer
@@ -150,25 +150,6 @@ export default class VideoTest extends React.Component {
             videoSourceId = sourceInfo.deviceId;
           }
         }
-      }
-
-      const constraints = {
-        audio: true,
-        video: {
-          mandatory: {
-            minWidth: 500, // Provide your own width, height and frame rate here
-            minHeight: 300,
-            minFrameRate: 30,
-          },
-          facingMode: isFront ? "user" : "environment",
-          optional: videoSourceId ? [{ sourceId: videoSourceId }] : [],
-        },
-      };
-
-      mediaDevices.getUserMedia(constraints).then(success).catch(failure);
-    });
-  };
-  sendToPeer = (messageType, payload) => {};
 
         const constraints = {
           audio: true,
@@ -192,8 +173,8 @@ export default class VideoTest extends React.Component {
     }
     sendToPeer = (payload) => {
       db.ref("candidates").push().set({
-        'candidate': payload
-      });
+      'iceCandidate': payload
+    });
     }
 
     createOffer = () => {
@@ -227,10 +208,6 @@ export default class VideoTest extends React.Component {
       });
     }
 
-  addCandidate = () => {
-    // retrieve and parse the Candidate copied from the remote peer
-    // const candidate = JSON.parse(this.textref.value)
-    // console.log('Adding candidate:', candidate)
 
     render() {
         const {
@@ -309,27 +286,10 @@ export default class VideoTest extends React.Component {
                         </View>
                     </ScrollView>
                 </View>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <ScrollView style={{ ...styles.scrollView }}>
-            <View
-              style={{
-                flex: 1,
-                width: "100%",
-                backgroundColor: "black",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {remoteVideo}
-            </View>
-          </ScrollView>
-        </View>
-      </SafeAreaView>
-    );
-  }
-}
+            </SafeAreaView>
+        );
+    }
+};
 
 const styles = StyleSheet.create({
   buttonsContainer: {
