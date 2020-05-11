@@ -48,6 +48,10 @@ export default class ProfileContent extends React.Component {
     email: "Correo electrónico",
     photo: defaultProfile,
     password: password,
+    textName: null,
+    textLastName: null,
+    textDisplayName: null,
+    textPassword: null,
   };
 
   textFields = {
@@ -61,6 +65,7 @@ export default class ProfileContent extends React.Component {
     super(props);
 
     this.changeProfilePhoto = this.changeProfilePhoto.bind(this);
+    this.confirm = this.confirm.bind(this);
   }
 
   componentDidMount() {
@@ -110,23 +115,24 @@ export default class ProfileContent extends React.Component {
     console.log("CONFIRM");
 
     var user = firebase.auth().currentUser;
-    console.log(this.state.password);
+    console.log(this.state.textPassword);
     var credential = firebase.auth.EmailAuthProvider.credential(
       firebase.auth().currentUser.email,
-      this.state.password
+      this.state.textPassword
     );
     user
       .reauthenticateWithCredential(credential)
-      .then(function () {
+      .then(() => {
+        console.log("11111111111111111");
+        console.log(this.state.textName);
         // User re-authenticated.
         firebase
           .database()
           .ref("users/" + this.state.uid)
           .set({
-            name: this.state.name,
-            lastname: this.state.lastname,
-            displayname: this.state.displayname,
-            photo: this.state.photo,
+            name: this.state.textName,
+            lastname: this.state.textLastName,
+            displayname: this.state.textDisplayName,
           });
       })
       .catch(function (error) {
@@ -187,18 +193,27 @@ export default class ProfileContent extends React.Component {
                   style={styles.userInput}
                   placeholder={this.state.name}
                   ref={"nameInput"}
+                  onChangeText={(text) => {
+                    this.setState({ textName: text });
+                  }}
                 />
                 <TextInput
                   autoCapitalize="sentences"
                   style={styles.userInput}
                   placeholder={this.state.lastname}
                   ref={"lastnamesInput"}
+                  onChangeText={(text) => {
+                    this.setState({ textLastName: text });
+                  }}
                 />
                 <TextInput
                   autoCapitalize="none"
                   style={styles.userInput}
                   placeholder={this.state.displayname}
                   ref={"usernameInput"}
+                  onChangeText={(text) => {
+                    this.setState({ textDisplayName: text });
+                  }}
                 />
                 <TextInput
                   autoCapitalize="none"
@@ -206,6 +221,9 @@ export default class ProfileContent extends React.Component {
                   placeholder={this.state.password}
                   secureTextEntry={true}
                   ref={"passwordInput"}
+                  onChangeText={(text) => {
+                    this.setState({ textPassword: text });
+                  }}
                 />
               </View>
               <View id={"buttonConfirm"} styles={styles.buttonConfirmContainer}>
