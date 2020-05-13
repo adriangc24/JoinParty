@@ -71,6 +71,7 @@ export default class ProfileContent extends React.Component {
     this.uploadImage = this.uploadImage.bind(this);
     this.changeProfilePhoto = this.changeProfilePhoto.bind(this);
     this.confirm = this.confirm.bind(this);
+    this.myPhoto = this.myPhoto.bind(this);
   }
 
   componentDidMount() {
@@ -238,6 +239,15 @@ export default class ProfileContent extends React.Component {
     });
   };
 
+  myPhoto = () => {
+    console.log("----- MY PHOTO");
+    if (this.state.photoUrl != null) {
+      return { uri: this.state.photoUrl };
+    } else {
+      return this.state.photo;
+    }
+  };
+
   render() {
     return (
       <View id={"profileComps"} style={styles.container}>
@@ -251,10 +261,7 @@ export default class ProfileContent extends React.Component {
                 onPress={() => this.changeProfilePhoto()}
                 style={styles.profileImage}
               >
-                <Thumbnail
-                  source={{ uri: this.state.photoUrl }}
-                  style={styles.photo}
-                />
+                <Thumbnail source={this.myPhoto()} style={styles.photo} />
               </TouchableOpacity>
             </View>
             <View id={"form"} style={styles.form}>
