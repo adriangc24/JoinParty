@@ -1,6 +1,8 @@
 import * as React from "react";
 import * as firebase from "firebase";
 import ImagePicker from "react-native-image-picker";
+import RNFetchBlob from "react-native-fetch-blob";
+
 var env = require("./../../env.json");
 var defaultProfile = require("../../assets/defaultProfile.png");
 import {
@@ -47,6 +49,8 @@ export default class ProfileContent extends React.Component {
     displayname: "Nombre de usuario",
     email: "Correo electrónico",
     photo: defaultProfile,
+    uri: null,
+    photoUrl: null,
     password: password,
     textName: null,
     textLastName: null,
@@ -64,9 +68,9 @@ export default class ProfileContent extends React.Component {
   constructor(props) {
     super(props);
 
+    this.uploadImage = this.uploadImage.bind(this);
     this.changeProfilePhoto = this.changeProfilePhoto.bind(this);
     this.confirm = this.confirm.bind(this);
-    this.uploadImage = this.uploadImage.bind(this);
   }
 
   componentDidMount() {
@@ -76,18 +80,20 @@ export default class ProfileContent extends React.Component {
         var usuario = firebase.database().ref("/users/" + user.uid);
         usuario.once("value").then((snapshot) => {
           var usr = snapshot.val();
-          console.log("-----O " + user.uid);
-          console.log("-----O " + usr.email);
+          console.log("-----O UID " + user.uid);
+          console.log("-----O " + user.email);
           console.log("-----O " + usr.name);
           console.log("-----O " + usr.lastname);
           console.log("-----O " + usr.displayname);
+          console.log("-----O PHOTO " + usr.photoUrl);
 
           this.setState({
             uid: user.uid,
             name: usr.name,
             lastname: usr.lastname,
+            photoUrl: usr.photoUrl,
             displayname: usr.displayname,
-            email: usr.email,
+            email: user.email,
           });
         });
       } else {
@@ -114,10 +120,6 @@ export default class ProfileContent extends React.Component {
   // Confirm Button
   confirm = () => {
     console.log("CONFIRM");
-
-    this.uploadImage(this.state.photo).then(() => {
-      console.log("OK");
-    });
 
     if (
       this.state.textName == null ||
@@ -146,6 +148,7 @@ export default class ProfileContent extends React.Component {
               name: this.state.textName,
               lastname: this.state.textLastName,
               displayname: this.state.textDisplayName,
+              photoUrl: this.state.photoUrl,
             });
         })
         .catch(function (error) {
@@ -154,6 +157,53 @@ export default class ProfileContent extends React.Component {
         });
     }
   };
+
+  uploadImage = () => {
+    console.log("-- UPLOAD IMAGE METHOD");
+    console.log(this.state.uri);
+    const image = this.state.uri;
+    const Blob = RNFetchBlob.polyfill.Blob;
+    const fs = RNFetchBlob.fs;
+    window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
+    window.Blob = Blob;
+
+    let uploadBlob = null;
+    const imageRef = firebase
+      .storage()
+      .ref("profilePhotos")
+      .child(this.state.email + ".jpg");
+    let mime = "image/jpg";
+    fs.readFile(image, "base64")
+      .then((data) => {
+        return Blob.build(data, { type: `${mime};BASE64` });
+      })
+      .then((blob) => {
+        uploadBlob = blob;
+        return imageRef.put(blob, { contentType: mime });
+      })
+      .then(() => {
+        uploadBlob.close();
+        return imageRef.getDownloadURL();
+      })
+      .then((url) => {
+        // URL of the image uploaded on Firebase storage
+        this.setState({ photoUrl: url });
+        console.log(url);
+        firebase
+          .database()
+          .ref("users/" + this.state.uid)
+          .set({
+            name: this.state.name,
+            lastname: this.state.lastname,
+            displayname: this.state.displayname,
+            photoUrl: this.state.photoUrl,
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   // On click profile photo
   changeProfilePhoto = () => {
     console.log("photo clicked");
@@ -181,17 +231,11 @@ export default class ProfileContent extends React.Component {
         console.log("source " + JSON.stringify(source));
         this.setState({
           photo: source,
-          //uri: response.uri,
+          uri: response.uri,
         });
+        this.uploadImage();
       }
     });
-  };
-
-  uploadImage = async (uri) => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    var ref = firebase.storage().ref().child("my-image");
-    return ref.put(blob);
   };
 
   render() {
@@ -207,7 +251,10 @@ export default class ProfileContent extends React.Component {
                 onPress={() => this.changeProfilePhoto()}
                 style={styles.profileImage}
               >
-                <Thumbnail source={this.state.photo} style={styles.photo} />
+                <Thumbnail
+                  source={{ uri: this.state.photoUrl }}
+                  style={styles.photo}
+                />
               </TouchableOpacity>
             </View>
             <View id={"form"} style={styles.form}>
