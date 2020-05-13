@@ -44,7 +44,6 @@ export const db = app.database();
 const AppStack = createStackNavigator(
   {
     Home: HomeScreen,
-    ForgotPass: ForgotPasswordScreen,
   },
   { headerMode: "none" }
 );
