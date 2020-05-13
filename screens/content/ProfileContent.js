@@ -66,6 +66,7 @@ export default class ProfileContent extends React.Component {
 
     this.changeProfilePhoto = this.changeProfilePhoto.bind(this);
     this.confirm = this.confirm.bind(this);
+    this.uploadImage = this.uploadImage.bind(this);
   }
 
   componentDidMount() {
@@ -94,7 +95,7 @@ export default class ProfileContent extends React.Component {
       }
     });
   }
-
+  // SignOut Button
   signOutUser = () => {
     Alert.alert(
       "Cierre de sesión",
@@ -114,33 +115,46 @@ export default class ProfileContent extends React.Component {
   confirm = () => {
     console.log("CONFIRM");
 
-    var user = firebase.auth().currentUser;
-    console.log(this.state.textPassword);
-    var credential = firebase.auth.EmailAuthProvider.credential(
-      firebase.auth().currentUser.email,
-      this.state.textPassword
-    );
-    user
-      .reauthenticateWithCredential(credential)
-      .then(() => {
-        console.log("11111111111111111");
-        console.log(this.state.textName);
-        // User re-authenticated.
-        firebase
-          .database()
-          .ref("users/" + this.state.uid)
-          .set({
-            name: this.state.textName,
-            lastname: this.state.textLastName,
-            displayname: this.state.textDisplayName,
-          });
-      })
-      .catch(function (error) {
-        console.log(error);
-        Alert.alert("Error: la contraseña no coincide !");
-      });
-  };
+    this.uploadImage(this.state.photo).then(() => {
+      console.log("OK");
+    });
 
+    if (
+      this.state.textName == null ||
+      this.state.textLastName == null ||
+      this.state.textDisplayName == null ||
+      this.state.textPassword == null
+    ) {
+      Alert.alert("Error: 1 o mas campos vacíos !");
+    } else {
+      var user = firebase.auth().currentUser;
+      console.log(this.state.textPassword);
+      var credential = firebase.auth.EmailAuthProvider.credential(
+        firebase.auth().currentUser.email,
+        this.state.textPassword
+      );
+      user
+        .reauthenticateWithCredential(credential)
+        .then(() => {
+          console.log("11111111111111111");
+          console.log(this.state.textName);
+          // User re-authenticated.
+          firebase
+            .database()
+            .ref("users/" + this.state.uid)
+            .set({
+              name: this.state.textName,
+              lastname: this.state.textLastName,
+              displayname: this.state.textDisplayName,
+            });
+        })
+        .catch(function (error) {
+          console.log(error);
+          Alert.alert("Error: la contraseña no coincide !");
+        });
+    }
+  };
+  // On click profile photo
   changeProfilePhoto = () => {
     console.log("photo clicked");
     var src;
@@ -162,12 +176,22 @@ export default class ProfileContent extends React.Component {
       } else if (response.customButton) {
         console.log("User tapped custom button: ", response.customButton);
       } else {
+        console.log("uri " + response.uri);
         const source = { uri: response.uri };
+        console.log("source " + JSON.stringify(source));
         this.setState({
           photo: source,
+          //uri: response.uri,
         });
       }
     });
+  };
+
+  uploadImage = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    var ref = firebase.storage().ref().child("my-image");
+    return ref.put(blob);
   };
 
   render() {
@@ -279,6 +303,7 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     fontSize: 24,
     padding: "1.50%",
+    paddingLeft: "5%",
     height: 40,
     marginBottom: 15,
     borderRadius: 25,

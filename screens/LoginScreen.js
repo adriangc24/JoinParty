@@ -180,6 +180,7 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     fontSize: 24,
     height: "30%",
+    paddingLeft: "5%",
     padding: "1.35%",
     marginBottom: 20,
     borderRadius: 25,

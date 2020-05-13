@@ -42,6 +42,8 @@ export default class HomeContent extends React.Component {
               <CardView />
               <CardView />
               <CardView />
+              <CardView />
+              <CardView />
             </View>
           </ScrollView>
         </Content>
