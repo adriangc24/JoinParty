@@ -235,9 +235,7 @@ function writeUserData(userId, name, lastname, displayname, email) {
       lastname: lastname,
       displayname: displayname,
       email: email,
-
-      //profile_picture: imageUrl,
-      // Add more stuff here
+      description: "",
     });
 }
 
