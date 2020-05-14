@@ -75,6 +75,7 @@ async function answerCall() {
 export default class VideoTest extends React.Component {
     constructor(props) {
       super(props)
+      this.setRemoteDescription = this.setRemoteDescription.bind(this);
 
       this.state = {
         localStream: null,
@@ -118,7 +119,7 @@ export default class VideoTest extends React.Component {
 
       // triggered when there is a change in connection state
       peerConnection.oniceconnectionstatechange = (e) => {
-        console.log(e)
+        console.log("peerConnection.oniceconnectionstatechange" + e)
       }
 
       peerConnection.onaddstream = (e) => {
@@ -129,7 +130,7 @@ export default class VideoTest extends React.Component {
       }
 
       const success = (stream) => {
-        console.log(stream.toURL())
+        console.log("success" + stream.toURL())
         this.setState({
           localStream: stream
         })
@@ -173,8 +174,8 @@ export default class VideoTest extends React.Component {
     }
     sendToPeer = (payload) => {
       db.ref("candidates").push().set({
-      'iceCandidate': payload
-    });
+        'iceCandidate': payload
+      });
     }
 
     createOffer = () => {
