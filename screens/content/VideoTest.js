@@ -73,6 +73,45 @@ async function answerCall() {
 }
 
 export default class VideoTest extends React.Component {
+<<<<<<< HEAD
+    constructor(props) {
+      super(props)
+      this.setRemoteDescription = this.setRemoteDescription.bind(this);
+
+      this.state = {
+        localStream: null,
+        remoteStream: null,
+      }
+
+      this.sdp
+      this.socket = null
+      this.candidates = []
+    }
+
+    componentDidMount = () => {
+
+      db.ref("candidates").on("child_added", async snapshot => {
+        var lel = snapshot.val().iceCandidate;
+        if (lel) {
+          try {
+            await peerConnection.addIceCandidate(lel);
+          } catch (e) {
+            console.error('Error adding received ice candidate', e);
+          }
+        }
+      })
+
+      // Listen for connectionstatechange on the local RTCPeerConnection
+      peerConnection.addEventListener('connectionstatechange', event => {
+          if (peerConnection.connectionState === 'connected') {
+              console.log('YOOO SOY GIGANTEEE')
+          }
+      });
+
+      peerConnection.onicecandidate = (e) => {
+        // send the candidates to the remote peer
+        // see addCandidate below to be triggered on the remote peer
+=======
   constructor(props) {
     super(props);
     this.setRemoteDescription = this.setRemoteDescription.bind(this);
@@ -85,6 +124,7 @@ export default class VideoTest extends React.Component {
     this.socket = null;
     this.candidates = [];
   }
+>>>>>>> 15cc9c1dff32638372cbcd2b1bcab6116daecedc
 
   componentDidMount = () => {
     db.ref("candidates").on("child_added", async (snapshot) => {
@@ -98,10 +138,16 @@ export default class VideoTest extends React.Component {
       }
     });
 
+<<<<<<< HEAD
+      // triggered when there is a change in connection state
+      peerConnection.oniceconnectionstatechange = (e) => {
+        console.log("peerConnection.oniceconnectionstatechange" + e)
+=======
     // Listen for connectionstatechange on the local RTCPeerConnection
     peerConnection.addEventListener("connectionstatechange", (event) => {
       if (peerConnection.connectionState === "connected") {
         console.log("YOOO SOY GIGANTEEE");
+>>>>>>> 15cc9c1dff32638372cbcd2b1bcab6116daecedc
       }
     });
 
@@ -109,9 +155,18 @@ export default class VideoTest extends React.Component {
       // send the candidates to the remote peer
       // see addCandidate below to be triggered on the remote peer
 
+<<<<<<< HEAD
+      const success = (stream) => {
+        console.log("success" + stream.toURL())
+        this.setState({
+          localStream: stream
+        })
+        peerConnection.addStream(stream)
+=======
       if (e.candidate) {
         // console.log(JSON.stringify(e.candidate))
         this.sendToPeer(e.candidate);
+>>>>>>> 15cc9c1dff32638372cbcd2b1bcab6116daecedc
       }
     };
 
@@ -153,6 +208,31 @@ export default class VideoTest extends React.Component {
         }
       }
 
+<<<<<<< HEAD
+        mediaDevices.getUserMedia(constraints)
+          .then(success)
+          .catch(failure);
+      });
+    }
+    sendToPeer = (payload) => {
+      db.ref("candidates").push().set({
+        'iceCandidate': payload
+      });
+    }
+
+    createOffer = () => {
+      console.log('Offer')
+      makeCall();
+    }
+
+    createAnswer = () => {
+      answerCall();
+    }
+
+    setRemoteDescription = () => {
+      // retrieve and parse the SDP copied from the remote peer
+      const desc = JSON.parse(this.sdp)
+=======
       const constraints = {
         audio: true,
         video: {
@@ -180,6 +260,7 @@ export default class VideoTest extends React.Component {
       iceCandidate: payload,
     });
   };
+>>>>>>> 15cc9c1dff32638372cbcd2b1bcab6116daecedc
 
   createOffer = () => {
     console.log("Offer");

@@ -6,6 +6,7 @@ import HomeScreen from "./screens/HomeScreen";
 import LoadingScreen from "./screens/LoadingScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
+import VideoDef from "./screens/VideoDef";
 
 const cors = require("cors");
 var serviceAccount = require("./functions/permissionsPrivateKey.json");
@@ -44,6 +45,8 @@ export const db = app.database();
 const AppStack = createStackNavigator(
   {
     Home: HomeScreen,
+    ForgotPass: ForgotPasswordScreen,
+    CallScreen: VideoDef,
   },
   { headerMode: "none" }
 );

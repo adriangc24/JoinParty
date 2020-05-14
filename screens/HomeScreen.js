@@ -2,7 +2,7 @@ import * as React from "react";
 import ProfileContent from "./content/ProfileContent";
 import SearchContent from "./content/SearchContent";
 import HomeContent from "./content/HomeContent";
-import VideoTest from "./content/VideoTest";
+import VideoDef from "./VideoDef";
 
 import {
   Platform,
@@ -43,7 +43,7 @@ export default class HomeScreen extends React.Component {
           <View id={"pageToLoad"}>
             {/* Este condicional determina que pagina sera la que se cargue */}
             {props.activePage == "HomeScreen" && <HomeContent />}
-            {props.activePage == "VideoTest" && <VideoTest />}
+            {props.activePage == "VideoDef" && <VideoDef />}
             {props.activePage == "SearchScreen" && <SearchContent />}
             {props.activePage == "ProfileScreen" && <ProfileContent />}
           </View>
@@ -62,10 +62,11 @@ export default class HomeScreen extends React.Component {
               <Button
                 id={"add"}
                 onPress={() => {
-                  setActivePage("VideoTest"), this.forceUpdate();
+                  //setActivePage("VideoDef"), this.forceUpdate();
+                  this.props.navigation.navigate("CallScreen");
                 }}
               >
-                <Icon name="add-circle" style={setIconStyle("VideoTest")} />
+                <Icon name="add-circle" style={setIconStyle("VideoDef")} />
               </Button>
               <Button
                 id={"search"}
