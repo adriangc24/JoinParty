@@ -22,6 +22,9 @@ import {
   Right,
   Title,
   Subtitle,
+  Item,
+  Label,
+  Input,
 } from "native-base";
 import backgroundImage from "./.././assets/loginBackground.jpg";
 import logo from "./.././assets/logo.png";
@@ -41,9 +44,12 @@ export default class LoginScreen extends React.Component {
   handleLogin = () => {
     console.log("handling login");
 
-    var email = this.refs.emailInput._lastNativeText;
-    var password = this.refs.passwordInput._lastNativeText;
+    //var email = this.refs.emailInput._lastNativeText;
+    //var password = this.refs.passwordInput._lastNativeText;
+    var email = this.state.email;
+    var password = this.state.password;
 
+    console.log(this.state.email + " - " + this.state.password);
     console.log("--- " + email + " " + password);
 
     if (email == "" || password == "" || password == undefined || email == "") {
@@ -79,28 +85,30 @@ export default class LoginScreen extends React.Component {
             style={styles.backgroundImage}
             id={"backgroundImage"}
           >
-            <View id={"componentsContainer"}>
+            <View id={"componentsContainer"} style={styles.componentsContainer}>
               <Image source={logo} style={styles.logo} id={"logoIcon"} />
               <View id={"textInputs"} style={styles.textInputs}>
-                <TextInput
-                  style={styles.userInput}
-                  autoCapitalize="none"
-                  //inlineImageLeft={"usernameicon"}
-                  placeholder={"Correo electrónico"}
-                  ref={"emailInput"}
-                  //onChangeText={(email) => this.setState({ email })}
-                  //value={this.state.email}
-                />
-                <TextInput
-                  autoCapitalize="none"
-                  style={styles.userInput}
-                  //inlineImageLeft={"passwordicon"}
-                  placeholder={"Contraseña"}
-                  secureTextEntry={true}
-                  ref={"passwordInput"}
-                  //onChangeText={(password) => this.setState({ password })}
-                  //value={this.state.password}
-                />
+                <Item floatingLabel style={styles.emailInput}>
+                  <Label style={styles.labelInput}>Correo electrónico</Label>
+                  <Input
+                    style={styles.userInput}
+                    ref={"emailInput"}
+                    onChangeText={(text) => {
+                      this.state.email = text;
+                    }}
+                  />
+                </Item>
+                <Item floatingLabel>
+                  <Label style={styles.labelInput}>Contraseña</Label>
+                  <Input
+                    style={styles.userInput}
+                    secureTextEntry={true}
+                    ref={"passwordInput"}
+                    onChangeText={(text) => {
+                      this.state.password = text;
+                    }}
+                  />
+                </Item>
               </View>
               <View id={"buttons"} style={styles.buttonsContainer}>
                 <Button
@@ -138,15 +146,11 @@ export default class LoginScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  errorMessage: {
-    bottom: "33%",
-    backgroundColor: "rgba(207, 200, 206, 0.8)",
-    borderRadius: 10,
-    width: "50%",
-    left: "25%",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
+  componentsContainer: {},
+  emailInput: {
+    marginTop: "5%",
+    paddingBottom: "2%",
+    marginBottom: "20%",
   },
   container: {
     flex: 1,
@@ -156,51 +160,46 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: "cover",
     justifyContent: "center",
+    opacity: 0.9,
   },
   logo: {
     width: "45%",
-    height: "25%",
-    left: "27%",
-    marginTop: "40%",
-    bottom: "20%",
+    height: "35%",
+    marginBottom: "0%",
+    marginTop: "-20%",
+    marginLeft: "25%",
+  },
+  labelInput: {
+    color: "white",
+    fontWeight: "bold",
   },
   textInputs: {
-    marginTop: "20%",
     height: 200,
-    justifyContent: "center",
-    alignItems: "center",
+    width: "75%",
+    marginTop: "1%",
+    marginLeft: "12%",
+    marginBottom: "12%",
+    fontWeight: "bold",
   },
   userInput: {
-    width: "80%",
-    bottom: "80%",
-    backgroundColor: "#FFFFFF",
-    opacity: 0.8,
-    borderColor: "#120A04",
-    borderWidth: 2,
-    borderStyle: "solid",
-    fontSize: 24,
-    height: "30%",
-    padding: "1.35%",
-    marginBottom: 20,
-    borderRadius: 25,
+    fontWeight: "bold",
   },
   forgotPassText: {
-    //fontFamily: "Sarala",
     fontSize: 15,
     lineHeight: 24,
     textDecorationLine: "underline",
-    color: "#1400FF",
+    color: "#0f00ca",
   },
   buttonsContainer: {
     flexDirection: "column",
     justifyContent: "space-between",
     position: "relative",
-    bottom: "20%",
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: "0%",
   },
   buttons: {
-    marginTop: "2.5%",
+    marginTop: "2%",
     width: "50%",
     alignItems: "center",
     backgroundColor: "rgba(71,30,85, 0.8)",

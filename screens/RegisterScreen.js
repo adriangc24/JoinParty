@@ -235,9 +235,7 @@ function writeUserData(userId, name, lastname, displayname, email) {
       lastname: lastname,
       displayname: displayname,
       email: email,
-
-      //profile_picture: imageUrl,
-      // Add more stuff here
+      description: "",
     });
 }
 
@@ -279,6 +277,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     height: "30%",
     padding: "1.35%",
+    paddingLeft: "5%",
     marginBottom: 20,
     borderRadius: 25,
   },

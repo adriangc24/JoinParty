@@ -31,6 +31,20 @@ import {
 } from "native-base";
 
 export default class CardView extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.handleComment = this.handleComment.bind(this);
+    this.handleLike = this.handleLike.bind(this);
+  }
+
+  handleComment = () => {
+    console.log("handling comment");
+  };
+  handleLike = () => {
+    console.log("handling like");
+  };
+
   render() {
     return (
       <Card style={styles.card}>
@@ -59,15 +73,23 @@ export default class CardView extends React.Component {
         </CardItem>
         <CardItem>
           <Left>
-            <Button transparent style={styles.buttonLikes}>
-              <Icon active name="thumbs-up" />
-              <Text>12</Text>
+            <Button
+              transparent
+              style={styles.buttonLikes}
+              onPress={this.handleLike}
+            >
+              <Icon name="thumbs-up" style={styles.likeIcon} />
+              <Text style={styles.textLikes}>0</Text>
             </Button>
           </Left>
           <Body>
-            <Button transparent style={styles.buttonComments}>
-              <Icon active name="chatbubbles" />
-              <Text style={styles.textComments}>4</Text>
+            <Button
+              transparent
+              style={styles.buttonComments}
+              onPress={this.handleComment}
+            >
+              <Icon name="chatbubbles" style={styles.chatIcon} />
+              <Text style={styles.textComments}>0</Text>
             </Button>
           </Body>
           <Right>
@@ -79,15 +101,26 @@ export default class CardView extends React.Component {
   }
 }
 const styles = StyleSheet.create({
+  textLikes: {
+    color: "#b5b5b5",
+  },
+  likeIcon: {
+    color: "#b5b5b5",
+  },
+  chatIcon: {
+    color: "#b5b5b5",
+  },
+  textComments: {
+    marginLeft: "2%",
+    color: "#b5b5b5",
+  },
   buttonComments: {
     justifyContent: "center",
   },
   buttonLikes: {
     justifyContent: "center",
   },
-  textComments: {
-    marginLeft: "2%",
-  },
+
   carousel: {
     alignItems: "center",
     flex: 1,

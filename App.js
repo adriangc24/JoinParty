@@ -46,7 +46,7 @@ const AppStack = createStackNavigator(
   {
     Home: HomeScreen,
     ForgotPass: ForgotPasswordScreen,
-    CallScreen: VideoDef,    
+    CallScreen: VideoDef,
   },
   { headerMode: "none" }
 );

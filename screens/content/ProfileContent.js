@@ -1,6 +1,8 @@
 import * as React from "react";
 import * as firebase from "firebase";
 import ImagePicker from "react-native-image-picker";
+import RNFetchBlob from "react-native-fetch-blob";
+
 var env = require("./../../env.json");
 var defaultProfile = require("../../assets/defaultProfile.png");
 import {
@@ -25,9 +27,16 @@ import {
   Icon,
   Left,
   Body,
-  Title,
   Thumbnail,
+  Textarea,
+  Right,
+  Title,
+  Subtitle,
+  Item,
+  Label,
+  Input,
 } from "native-base";
+var passwordEquals = false;
 var uid,
   uri,
   lastname = "Apellidos",
@@ -37,33 +46,42 @@ var uid,
   password2 = "Repita la contraseña",
   photo = null,
   displayname = "Nombre de usuario";
-var src;
-// Import Admin SDK
-/*var admin = require("firebase-admin");
-// Get a database reference to our posts
-var db = admin.database();
-var ref = db.ref("/users");*/
 
 export default class ProfileContent extends React.Component {
   state = {
+    uid: null,
     name: "Nombre",
     lastname: "Apellidos",
     displayname: "Nombre de usuario",
     email: "Correo electrónico",
+    description: "Introduce aquí tu descripción",
     photo: defaultProfile,
+    uri: null,
+    photoUrl: null,
+    password: password,
+    textName: null,
+    textDescription: null,
+    textLastName: null,
+    textDisplayName: null,
+    textPassword: null,
+  };
+
+  textFields = {
+    name: null,
+    lastname: null,
+    displayname: null,
+    password: null,
+    description: null,
   };
 
   constructor(props) {
     super(props);
 
+    this.uploadImage = this.uploadImage.bind(this);
     this.changeProfilePhoto = this.changeProfilePhoto.bind(this);
-    /* this.state = {
-      name: "",
-      lastname: "",
-      displayname: "",
-      email: "",
-      photo: defaultProfile,
-    }; */
+    this.confirm = this.confirm.bind(this);
+    this.myPhoto = this.myPhoto.bind(this);
+    this.getDescription = this.getDescription.bind(this);
   }
 
   componentDidMount() {
@@ -73,16 +91,23 @@ export default class ProfileContent extends React.Component {
         var usuario = firebase.database().ref("/users/" + user.uid);
         usuario.once("value").then((snapshot) => {
           var usr = snapshot.val();
-          console.log("-----O " + usr.email);
+
+          console.log("-----O UID " + user.uid);
+          console.log("-----O " + user.email);
           console.log("-----O " + usr.name);
           console.log("-----O " + usr.lastname);
           console.log("-----O " + usr.displayname);
+          console.log("-----O " + usr.description);
+          console.log("-----O PHOTO " + usr.photoUrl);
 
           this.setState({
+            uid: user.uid,
             name: usr.name,
             lastname: usr.lastname,
+            photoUrl: usr.photoUrl,
             displayname: usr.displayname,
-            email: usr.email,
+            description: usr.description,
+            email: user.email,
           });
         });
       } else {
@@ -90,7 +115,7 @@ export default class ProfileContent extends React.Component {
       }
     });
   }
-
+  // SignOut Button
   signOutUser = () => {
     Alert.alert(
       "Cierre de sesión",
@@ -106,7 +131,128 @@ export default class ProfileContent extends React.Component {
       { cancelable: false }
     );
   };
+  // Confirm Button
+  confirm = () => {
+    if (this.state.textDescription != null) {
+      this.state.description = this.state.textDescription;
+    }
+    if (this.state.textDisplayName != null) {
+      this.state.displayname = this.state.textDisplayName;
+    }
+    if (this.state.textName != null) {
+      this.state.name = this.state.textName;
+    }
+    if (this.state.textLastName != null) {
+      this.state.lastname = this.state.textLastName;
+    }
+    if (this.state.textPassword != null) {
+      this.state.password = this.state.textPassword;
+    }
 
+    console.log("CONFIRM");
+    if (this.state.description != null || this.state.description != "") {
+      firebase
+        .database()
+        .ref("users/" + this.state.uid)
+        .set({
+          name: this.state.name,
+          lastname: this.state.lastname,
+          displayname: this.state.displayname,
+          description: this.state.description,
+          photoUrl: this.state.photoUrl,
+        })
+        .catch(function (error) {
+          console.log(error);
+          Alert.alert("Error: la contraseña no coincide !");
+        });
+    }
+    ////////////// ALL THE FORM /////////////
+    else if (
+      this.state.name == null ||
+      this.state.name == null ||
+      this.state.displayname == null ||
+      this.state.password == null
+    ) {
+      Alert.alert("Error: 1 o mas campos vacíos !");
+    } else {
+      var user = firebase.auth().currentUser;
+      console.log(this.state.textPassword);
+      var credential = firebase.auth.EmailAuthProvider.credential(
+        firebase.auth().currentUser.email,
+        this.state.textPassword
+      );
+      user
+        .reauthenticateWithCredential(credential)
+        .then(() => {
+          console.log("11111111111111111");
+          console.log(this.state.textName);
+          // User re-authenticated.
+          firebase
+            .database()
+            .ref("users/" + this.state.uid)
+            .set({
+              name: this.state.name,
+              lastname: this.state.lastName,
+              displayname: this.state.displayName,
+              description: this.state.description,
+              photoUrl: this.state.photoUrl,
+            });
+        })
+        .catch(function (error) {
+          console.log(error);
+          Alert.alert("Error: la contraseña no coincide !");
+        });
+    }
+  };
+
+  uploadImage = () => {
+    console.log("-- UPLOAD IMAGE METHOD");
+    console.log(this.state.uri);
+    const image = this.state.uri;
+    const Blob = RNFetchBlob.polyfill.Blob;
+    const fs = RNFetchBlob.fs;
+    window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
+    window.Blob = Blob;
+
+    let uploadBlob = null;
+    const imageRef = firebase
+      .storage()
+      .ref("profilePhotos")
+      .child(this.state.email + ".jpg");
+    let mime = "image/jpg";
+    fs.readFile(image, "base64")
+      .then((data) => {
+        return Blob.build(data, { type: `${mime};BASE64` });
+      })
+      .then((blob) => {
+        uploadBlob = blob;
+        return imageRef.put(blob, { contentType: mime });
+      })
+      .then(() => {
+        uploadBlob.close();
+        return imageRef.getDownloadURL();
+      })
+      .then((url) => {
+        // URL of the image uploaded on Firebase storage
+        this.setState({ photoUrl: url });
+        console.log(url);
+        firebase
+          .database()
+          .ref("users/" + this.state.uid)
+          .set({
+            name: this.state.name,
+            lastname: this.state.lastname,
+            displayname: this.state.displayname,
+            description: this.state.description,
+            photoUrl: this.state.photoUrl,
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  // On click profile photo
   changeProfilePhoto = () => {
     console.log("photo clicked");
     var src;
@@ -128,14 +274,32 @@ export default class ProfileContent extends React.Component {
       } else if (response.customButton) {
         console.log("User tapped custom button: ", response.customButton);
       } else {
+        console.log("uri " + response.uri);
         const source = { uri: response.uri };
-        src = source;
-        console.log("___________ " + this);
+        console.log("source " + JSON.stringify(source));
         this.setState({
           photo: source,
+          uri: response.uri,
         });
+        this.uploadImage();
       }
     });
+  };
+
+  myPhoto = () => {
+    if (this.state.photoUrl != null) {
+      return { uri: this.state.photoUrl };
+    } else {
+      return this.state.photo;
+    }
+  };
+
+  getDescription = () => {
+    if (this.state.description == "") {
+      return "Introduce aquí tu descripción";
+    } else {
+      return this.state.description;
+    }
   };
 
   render() {
@@ -151,70 +315,91 @@ export default class ProfileContent extends React.Component {
                 onPress={() => this.changeProfilePhoto()}
                 style={styles.profileImage}
               >
-                <Thumbnail source={this.state.photo} style={styles.photo} />
+                <Thumbnail source={this.myPhoto()} style={styles.photo} />
               </TouchableOpacity>
             </View>
+            <Textarea
+              rowSpan={5}
+              bordered
+              placeholder={this.getDescription()}
+              style={styles.userDescription}
+              onChangeText={(text) => {
+                this.setState({ textDescription: text });
+              }}
+            />
             <View id={"form"} style={styles.form}>
               <View id={"textInputs"} style={styles.textInputs}>
-                <TextInput
-                  autoCapitalize="sentences"
-                  style={styles.userInput}
-                  placeholder={this.state.name}
-                  ref={"nameInput"}
-                />
-                <TextInput
-                  autoCapitalize="sentences"
-                  style={styles.userInput}
-                  placeholder={this.state.lastname}
-                  ref={"lastnamesInput"}
-                />
-                <TextInput
-                  autoCapitalize="none"
-                  style={styles.userInput}
-                  placeholder={this.state.displayname}
-                  ref={"usernameInput"}
-                />
-                <TextInput
-                  autoCapitalize="none"
-                  style={styles.userInput}
-                  placeholder={this.state.email}
-                  ref={"emailInput"}
-                />
-                <TextInput
-                  autoCapitalize="none"
-                  style={styles.userInput}
-                  placeholder={"Contraseña"}
-                  secureTextEntry={true}
-                  ref={"passwordInput"}
-                />
-                <TextInput
-                  autoCapitalize="none"
-                  style={styles.userInput}
-                  placeholder={"Repita la contraseña"}
-                  secureTextEntry={true}
-                  ref={"passwordInput2"}
-                />
+                <Item floatingLabel style={styles.input}>
+                  <Label style={styles.labelInput}>Nombre</Label>
+                  <Input
+                    style={styles.userInput}
+                    value={this.state.name}
+                    ref={"nameInput"}
+                    onChangeText={(text) => {
+                      this.setState({ textName: text });
+                    }}
+                  />
+                </Item>
+                <Item floatingLabel style={styles.input}>
+                  <Label style={styles.labelInput}>Apellidos</Label>
+                  <Input
+                    style={styles.userInput}
+                    value={this.state.lastname}
+                    ref={"lastnameInput"}
+                    onChangeText={(text) => {
+                      this.setState({ textLastName: text });
+                    }}
+                  />
+                </Item>
+                <Item floatingLabel style={styles.input}>
+                  <Label style={styles.labelInput}>Nombre de usuario</Label>
+                  <Input
+                    style={styles.userInput}
+                    value={this.state.displayname}
+                    ref={"usernameInput"}
+                    onChangeText={(text) => {
+                      this.setState({ textDisplayName: text });
+                    }}
+                  />
+                </Item>
+                <Item floatingLabel style={styles.input}>
+                  <Label style={styles.labelInput}>Contraseña</Label>
+                  <Input
+                    style={styles.userInput}
+                    value={"Contraseña"}
+                    secureTextEntry={true}
+                    ref={"passwordInput"}
+                    onChangeText={(text) => {
+                      this.setState({ textPassword: text });
+                    }}
+                  />
+                </Item>
               </View>
-              <View id={"buttonConfirm"} styles={styles.buttonConfirmContainer}>
-                <Button
-                  rounded
-                  style={styles.buttonConfirm}
-                  onPress={this.confirm}
+              <View id={"buttonsContainer"} styles={styles.buttonsContainer}>
+                <View
+                  id={"buttonConfirm"}
+                  styles={styles.buttonConfirmContainer}
                 >
-                  <Text style={{ fontSize: 15 }}>Confirmar</Text>
-                </Button>
-              </View>
-              <View
-                id={"buttonSignOutContainer"}
-                styles={styles.buttonSignOutContainer}
-              >
-                <Button
-                  rounded
-                  style={styles.buttonSignOut}
-                  onPress={this.signOutUser}
+                  <Button
+                    rounded
+                    style={styles.buttonConfirm}
+                    onPress={this.confirm}
+                  >
+                    <Text style={{ fontSize: 15 }}>Confirmar</Text>
+                  </Button>
+                </View>
+                <View
+                  id={"buttonSignOutContainer"}
+                  styles={styles.buttonSignOutContainer}
                 >
-                  <Text style={{ fontSize: 15 }}>Cerrar sesión</Text>
-                </Button>
+                  <Button
+                    rounded
+                    style={styles.buttonSignOut}
+                    onPress={this.signOutUser}
+                  >
+                    <Text style={{ fontSize: 15 }}>Cerrar sesión</Text>
+                  </Button>
+                </View>
               </View>
             </View>
           </View>
@@ -228,52 +413,51 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  userDescription: {
+    marginTop: "3%",
+    marginBottom: "2%",
+    width: "80%",
+    marginLeft: "5%",
+    marginRight: "5%",
+    color: "#ffffff",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   profileContainer: {
     alignItems: "center",
     justifyContent: "center",
   },
   textInputs: {
-    height: 200,
-    width: 400,
+    height: "43%",
+    width: "80%",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: "20%",
+    marginTop: "2%",
   },
   userInput: {
-    width: "80%",
-    backgroundColor: "#FFFFFF",
-    opacity: 0.8,
-    borderColor: "#120A04",
-    borderWidth: 2,
-    borderStyle: "solid",
-    fontSize: 24,
-    padding: "1.50%",
-    height: 40,
-    marginBottom: 15,
-    borderRadius: 25,
+    color: "white",
+    fontSize: 17,
+  },
+  input: {
+    marginBottom: "1%",
   },
   form: {
     alignItems: "center",
   },
-  buttonSignOutContainer: {
+  buttonsContainer: {
     justifyContent: "center",
     alignItems: "center",
   },
   buttonSignOut: {
     backgroundColor: "#da0446",
-    marginTop: "2%",
     justifyContent: "center",
-    alignItems: "center",
-  },
-  buttonConfirmContainer: {
-    justifyContent: "center",
-    alignItems: "center",
+    marginBottom: "5%",
   },
   buttonConfirm: {
     backgroundColor: "green",
-    marginTop: "15%",
     justifyContent: "center",
-    alignItems: "center",
+    marginTop: "18%",
+    marginBottom: "-9%",
   },
   footerTab: {
     backgroundColor: "black",
@@ -287,6 +471,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   profileImage: {
+    marginTop: "2%",
     borderWidth: 5,
     borderColor: "#da0446",
     padding: "15%",
