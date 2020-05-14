@@ -63,7 +63,6 @@ export default class SearchContent extends React.Component {
         });
       })
       .then(() => {
-        var arrayPene = [];
         for (let i = 0; i < array.length; i++) {
           // this.setState({
           //   element: [
@@ -75,7 +74,7 @@ export default class SearchContent extends React.Component {
           //     ),
           //   ],
           // });
-          arrayPene.push(
+          this.state.element.push(
             this.getListItems(
               array[i].photoUrl,
               array[i].displayname,
@@ -85,7 +84,8 @@ export default class SearchContent extends React.Component {
           );
           console.log(this.state.element);
         }
-        this.state.element = arrayPene;
+        array = [];
+        this.setState({ element: [] });
       });
   };
 
