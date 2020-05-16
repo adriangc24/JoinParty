@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as firebase from "firebase";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import {
   Platform,
@@ -28,13 +29,13 @@ import {
   Right,
 } from "native-base";
 
-export const dynamicItem = (avatarURL, username, description, isFollowed) => {
-  console.log(
-    "*************** " + avatarURL,
-    username,
-    description,
-    isFollowed
-  );
+export const dynamicItem = (
+  uid,
+  avatarURL,
+  username,
+  description,
+  isFollowed
+) => {
   class MineListItem extends React.Component {
     constructor(props) {
       super(props);
@@ -43,18 +44,73 @@ export const dynamicItem = (avatarURL, username, description, isFollowed) => {
       this.isFollowing = this.isFollowing.bind(this);
     }
     state = {
+      currentUid: null,
       isFollowing: null,
     };
 
+    componentDidMount() {
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          // User logged in already or has just logged in.
+          this.setState({ currentUid: user.uid });
+        } else {
+          // User not logged in or has just logged out.
+        }
+      });
+    }
+
     handleFollow = () => {
-      if (this.state.isFollowing == false) {
-      } else if (this.state.isFollowing == true) {
+      if (this.state.currentUid != uid) {
+        var ref = firebase
+          .database()
+          .ref("social/" + this.state.currentUid)
+          .child("/follows");
+        ref.push({
+          userID: uid,
+        });
+
+        var ref = firebase
+          .database()
+          .ref("social/" + uid)
+          .child("/follows");
+        uid = this.state.currentUid;
+        ref.push({ userID: uid });
       }
     };
 
     isFollowing = () => {
-      //this.setState({ isFollowing: false });
-      return "user-plus";
+      var idUsuario;
+      var currentUser = this.state.currentUid;
+      if (currentUser != null) {
+        console.log("ZZZ " + currentUser);
+        var ref = firebase.database().ref("social/" + currentUser + "/follows");
+        ref.on(
+          "value",
+          function (snapshot) {
+            var aux = snapshot.val();
+            console.log("YYYYYYYYYY " + JSON.stringify(aux));
+            let lelaso;
+            for (var propss in aux) {
+              lelaso = propss;
+            }
+            try {
+              idUsuario = aux[lelaso].userID;
+              console.log(idUsuario);
+            } catch (error) {
+              console.log(error);
+            }
+          },
+          function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+          }
+        );
+      }
+      if (uid == idUsuario) {
+        return "user-check";
+      } else {
+        return "user-plus";
+      }
+      this.setState(this.state);
     };
 
     render() {
@@ -78,7 +134,7 @@ export const dynamicItem = (avatarURL, username, description, isFollowed) => {
             color="white"
             size={20}
             style={{ marginRight: "3%" }}
-            onPress={this.handleFollow()}
+            onPress={this.handleFollow}
           />
         </ListItem>
       );

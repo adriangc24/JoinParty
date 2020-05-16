@@ -2,6 +2,7 @@ import * as React from "react";
 import ProfileContent from "./content/ProfileContent";
 import SearchContent from "./content/SearchContent";
 import HomeContent from "./content/HomeContent";
+import VideoTest from "./content/VideoTest";
 import VideoDef from "./VideoDef";
 
 import {
@@ -43,7 +44,7 @@ export default class HomeScreen extends React.Component {
           <View id={"pageToLoad"}>
             {/* Este condicional determina que pagina sera la que se cargue */}
             {props.activePage == "HomeScreen" && <HomeContent />}
-            {props.activePage == "VideoDef" && <VideoDef />}
+            {props.activePage == "VideoTest" && <VideoTest />}
             {props.activePage == "SearchScreen" && <SearchContent />}
             {props.activePage == "ProfileScreen" && <ProfileContent />}
           </View>
@@ -66,7 +67,7 @@ export default class HomeScreen extends React.Component {
                   this.props.navigation.navigate("CallScreen");
                 }}
               >
-                <Icon name="add-circle" style={setIconStyle("VideoDef")} />
+                <Icon name="add-circle" style={setIconStyle("VideoTest")} />
               </Button>
               <Button
                 id={"search"}

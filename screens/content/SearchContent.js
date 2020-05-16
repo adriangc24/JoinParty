@@ -44,8 +44,8 @@ export default class SearchContent extends React.Component {
     element: [],
   };
 
-  getListItems = (avatarURL, username, description, isFollowed) => {
-    return dynamicItem(avatarURL, username, description, isFollowed);
+  getListItems = (uid, avatarURL, username, description, isFollowed) => {
+    return dynamicItem(uid, avatarURL, username, description, isFollowed);
   };
 
   searchBarUser = (text) => {
@@ -58,17 +58,21 @@ export default class SearchContent extends React.Component {
     query
       .once("value", function (snapshot) {
         snapshot.forEach(function (child) {
+          console.log(JSON.stringify(child.key));
           console.log(
             "----------------------- child value: " + child.val().displayname
           );
           array.push(child.val());
+          array.push(child.key);
         });
       })
       .then(() => {
         var arrayPene = [];
-        for (let i = 0; i < array.length; i++) {
+        for (let i = 0; i < array.length; i += 2) {
+          console.log("333333333333 " + array[i + 1]);
           arrayPene.push(
             this.getListItems(
+              array[i + 1],
               array[i].photoUrl,
               array[i].displayname,
               array[i].description,

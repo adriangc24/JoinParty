@@ -29,11 +29,11 @@ import {
 } from "react-native-webrtc";
 
 import Icon from "react-native-vector-icons/FontAwesome5";
-
+var llamador;
 const dimensions = Dimensions.get("window");
-import firebaseConn from "./../Services/firebase";
+// import firebaseConn from "./../Services/firebase";
 import * as firebase from "firebase";
-const ayylmao = new firebaseConn();
+// const ayylmao = new firebaseConn();
 
 var micIconProps = {
   micIcon: "microphone",
@@ -65,21 +65,28 @@ export default class VideoDef extends React.Component {
     const configuration = {
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     };
-    const peerConnection = new RTCPeerConnection(configuration);
+    var peerConnection = new RTCPeerConnection(configuration);
 
     var candidatess = [];
 
     const db = firebase.database();
 
-    peerConnection.onicecandidate = (e) => {
-      // send the candidates to the remote peer
-      // see addCandidate below to be triggered on the remote peer
-      console.log("WEOIWOEPIWQOPEIWQOPEIOPQ - " + e);
-      if (e.candidate) {
-        console.log("candidatos" + JSON.stringify(e.candidate));
-        candidatess.push(e.candidate);
+    /*peerConnection.onicecandidate = (e) => {
+              // send the candidates to the remote peer
+              // see addCandidate below to be triggered on the remote peer
+              console.log('WEOIWOEPIWQOPEIWQOPEIOPQ - '+ e)
+              if (e.candidate) {
+                console.log('candidatos' + JSON.stringify(e.candidate))
+                candidatess.push(e.candidate);
+              }
+            }*/
+
+    peerConnection.addEventListener("icecandidate", (event) => {
+      if (event.candidate) {
+        const json = event.candidate.toJSON();
+        candidatess.push(json);
       }
-    };
+    });
 
     // triggered when there is a change in connection state
     peerConnection.oniceconnectionstatechange = (e) => {
@@ -96,13 +103,10 @@ export default class VideoDef extends React.Component {
 
     let currentUserId = ayylmao.getCurrentUserId();
 
-    let llamador;
-
     crearTrigger();
 
-    crearTriggerRespondido();
-
     enviarOferta();
+
     let estoesUNPUTOBUG = "0";
 
     async function crearTrigger() {
@@ -111,20 +115,28 @@ export default class VideoDef extends React.Component {
         console.log("llamador: " + JSON.stringify(llamador));
         estoesUNPUTOBUG++;
         console.log("ESTOESUNPUTOBUG " + estoesUNPUTOBUG);
-        if (snapshot.val().offer) {
+        console.log("JOAAAAAAN-----: " + JSON.stringify(llamador));
+        if (llamador.ofertaa.offer) {
           Alert.alert(
-            "Llamada entrante de " + snapshot.val().infoUser,
+            "Llamada entrante de " + llamador.ofertaa.infoUser,
             "quieres contestar?",
             [
               {
                 text: "Si",
-                onPress: async () => {
-                  peerConnection.setRemoteDescription(
-                    new RTCSessionDescription(snapshot.val().offer)
+                onPress: () => {
+                  peerConnection = new RTCPeerConnection(configuration);
+                  console.log(
+                    "LLAMADOR OFERTA OFER: " +
+                      JSON.stringify(llamador.ofertaa.offer)
                   );
-                  console.log("ofertaAaaaaaAa " + peerConnection);
-                  await enviarRespuesta();
-                  console.log("got peer connection");
+                  peerConnection
+                    .setRemoteDescription(
+                      new RTCSessionDescription(llamador.ofertaa.offer)
+                    )
+                    .then(() => {
+                      enviarRespuesta();
+                      console.log("got peer connection");
+                    });
                 },
               },
               {
@@ -136,17 +148,11 @@ export default class VideoDef extends React.Component {
             ],
             { cancelable: false }
           );
-        }
-      });
-    }
-
-    async function crearTriggerRespondido() {
-      db.ref("calls/" + currentUserId).on("child_added", async (snapshot) => {
-        llamador = snapshot.val();
-        console.log("estas respondiendo a: " + JSON.stringify(llamador));
-        if (snapshot.val()) {
+        } else if (llamador.respuestaa.answer) {
           Alert.alert("te han respondido hulio");
-          peerConnection.setRemoteDescription(snapshot.val().answer);
+          peerConnection.setRemoteDescription(
+            new RTCSessionDescription(llamador.respuestaa.answer)
+          );
         } else {
           Alert.alert("nadie te quiere " + JSON.stringify(llamador));
         }
@@ -161,7 +167,9 @@ export default class VideoDef extends React.Component {
         var lel = snapshot.val().iceCandidate;
         if (lel) {
           try {
-            await peerConnection.addIceCandidate(lel);
+            const candidate = new RTCIceCandidate(lel.iceCandidate);
+            console.log("añadiendo iceCandidate: " + candidate);
+            await peerConnection.addIceCandidate(candidate);
           } catch (e) {
             console.error("Error adding received ice candidate", e);
           }
@@ -190,13 +198,18 @@ export default class VideoDef extends React.Component {
 
       let objetoLlamada = {
         candidates: candidatess,
-        offer: offer,
+        offer: {
+          type: offer.type,
+          sdp: offer.sdp,
+        },
         infoUser: userdisplay,
       };
 
-      db.ref("calls/" + knoId).set({
-        ofertaa: objetoLlamada,
-      });
+      db.ref("calls/" + knoId)
+        .push()
+        .set({
+          ofertaa: objetoLlamada,
+        });
 
       console.log("oferta enviada a: " + elkno);
     }
@@ -209,13 +222,18 @@ export default class VideoDef extends React.Component {
 
       let objetoRespuesta = {
         candidates: candidatess,
-        answer: answer,
+        answer: {
+          type: answer.type,
+          sdp: answer.sdp,
+        },
         infoUser: userdisplay,
       };
 
-      db.ref("calls/" + knoId).set({
-        respuestaa: objetoRespuesta,
-      });
+      db.ref("calls/" + knoId)
+        .push()
+        .set({
+          respuestaa: objetoRespuesta,
+        });
     }
 
     //FIN WEBRTC ----------------------------------------------------
