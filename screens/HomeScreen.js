@@ -64,7 +64,7 @@ export default class HomeScreen extends React.Component {
                 id={"add"}
                 onPress={() => {
                   //setActivePage("VideoDef"), this.forceUpdate();
-                  this.props.navigation.navigate("CallScreen");
+                  this.props.navigation.navigate("CallScreen", {'data':'kelokeee'});
                 }}
               >
                 <Icon name="add-circle" style={setIconStyle("VideoTest")} />

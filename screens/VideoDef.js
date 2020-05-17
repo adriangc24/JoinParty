@@ -29,7 +29,7 @@ import {
 } from "react-native-webrtc";
 
 import Icon from "react-native-vector-icons/FontAwesome5";
-var llamador;
+
 const dimensions = Dimensions.get("window");
 // import firebaseConn from "./../Services/firebase";
 import * as firebase from "firebase";
@@ -103,6 +103,8 @@ export default class VideoDef extends React.Component {
 
     let currentUserId = ayylmao.getCurrentUserId();
 
+    let llamador;
+
     crearTrigger();
 
     enviarOferta();
@@ -110,7 +112,7 @@ export default class VideoDef extends React.Component {
     let estoesUNPUTOBUG = "0";
 
     async function crearTrigger() {
-      db.ref("calls/" + currentUserId).on("child_added", async (snapshot) => {
+      db.ref("calls/" + currentUserId).on("child_added", (snapshot) => {
         llamador = snapshot.val();
         console.log("llamador: " + JSON.stringify(llamador));
         estoesUNPUTOBUG++;
@@ -177,18 +179,9 @@ export default class VideoDef extends React.Component {
       }
     );
 
-    let userdisplay =
-      currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2"
-        ? "adriangc24"
-        : "juanbass";
-    let elkno =
-      currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2"
-        ? "juanbass"
-        : "adriangc24";
-    let knoId =
-      currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2"
-        ? "4hwdaoqyoyRj3f1IH0hD4BXZZNT2"
-        : "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2";
+    let userdisplay = currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2" ? "adriangc24" : "juanbass";
+    let elkno = currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2" ? "juanbass" : "adriangc24";
+    let knoId = currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2" ? "4hwdaoqyoyRj3f1IH0hD4BXZZNT2" : "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2";
 
     async function enviarOferta() {
       const offer = await peerConnection.createOffer();
@@ -257,10 +250,7 @@ export default class VideoDef extends React.Component {
       let videoSourceId;
       for (let i = 0; i < sourceInfos.length; i++) {
         const sourceInfo = sourceInfos[i];
-        if (
-          sourceInfo.kind == "videoinput" &&
-          sourceInfo.facing == (isFront ? "front" : "environment")
-        ) {
+        if (sourceInfo.kind == "videoinput" && sourceInfo.facing == (isFront ? "front" : "environment")) {
           videoSourceId = sourceInfo.deviceId;
         }
       }
