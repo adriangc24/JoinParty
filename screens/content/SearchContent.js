@@ -58,18 +58,19 @@ export default class SearchContent extends React.Component {
     query
       .once("value", function (snapshot) {
         snapshot.forEach(function (child) {
-          console.log(JSON.stringify(child.key));
+          console.log(JSON.stringify(child.key).replace(/"/g, ""));
           console.log(
             "----------------------- child value: " + child.val().displayname
           );
           array.push(child.val());
-          array.push(child.key);
+          let key = child.key;
+          key = key.replace(/"/g, "");
+          array.push(key);
         });
       })
       .then(() => {
         var arrayPene = [];
         for (let i = 0; i < array.length; i += 2) {
-          console.log("333333333333 " + array[i + 1]);
           arrayPene.push(
             this.getListItems(
               array[i + 1],

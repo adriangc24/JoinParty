@@ -55,23 +55,23 @@ const configuration = {
 };
 const peerConnection = new RTCPeerConnection(configuration);
 
-// import firebaseConn from "./../../Services/firebase";
-// const ayylmao = new firebaseConn();
+import firebaseConn from "./../../Services/firebase";
+const ayylmao = new firebaseConn();
 
-// let currentUserId;
-// let userdisplay;
-// let elkno;
-// let knoId;
-// //
-// currentUserId = ayylmao.getCurrentUserId();
-// userdisplay =
-//   currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2" ? "adriangc24" : "juanbass";
-// elkno =
-//   currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2" ? "juanbass" : "adriangc24";
-// knoId =
-//   currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2"
-//     ? "4hwdaoqyoyRj3f1IH0hD4BXZZNT2"
-//     : "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2";
+let currentUserId;
+let userdisplay;
+let elkno;
+let knoId;
+//
+currentUserId = ayylmao.getCurrentUserId();
+userdisplay =
+  currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2" ? "adriangc24" : "juanbass";
+elkno =
+  currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2" ? "juanbass" : "adriangc24";
+knoId =
+  currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2"
+    ? "4hwdaoqyoyRj3f1IH0hD4BXZZNT2"
+    : "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2";
 
 async function makeCall() {
   db.ref("calls/" + currentUserId).on("child_added", async (snapshot) => {
