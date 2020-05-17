@@ -29,7 +29,6 @@ APP desplegada 100% en Firebase
 
 ## Construido con 🛠️
 
-* [BOOTSRAP](https://getbootstrap.com/) - Framework CSS
 * [REACT NATIVE](https://reactnative.dev/) - Framework para aplicaciones nativas basado en JS
 * [FIREBASE](https://firebase.google.com/?hl=es) - Gestor de BBD no relacional  hosting
 * [NODE JS](https://nodejs.org/es/) - Entorno de ejecución JavaScript orientado a eventos asíncronos del lado servidor

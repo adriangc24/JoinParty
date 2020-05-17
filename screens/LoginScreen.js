@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
     marginLeft: "25%",
   },
   labelInput: {
-    color: "white",
+    color: "black",
     fontWeight: "bold",
   },
   textInputs: {
@@ -180,9 +180,11 @@ const styles = StyleSheet.create({
     marginLeft: "12%",
     marginBottom: "12%",
     fontWeight: "bold",
+    color: "black",
   },
   userInput: {
     fontWeight: "bold",
+    color: "black",
   },
   forgotPassText: {
     fontSize: 15,
