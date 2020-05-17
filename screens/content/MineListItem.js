@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as firebase from "firebase";
 import Icon from "react-native-vector-icons/FontAwesome5";
+var defaultProfile = require("./../../assets/defaultProfile.png");
 import {
   Platform,
   View,
@@ -45,6 +46,7 @@ export const dynamicItem = (
       this.unfollow = this.unfollow.bind(this);
       this.follow = this.follow.bind(this);
       this.checkFollowers = this.checkFollowers.bind(this);
+      this.getPhoto = this.getPhoto.bind(this);
     }
     state = {
       currentUid: null,
@@ -55,16 +57,11 @@ export const dynamicItem = (
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
           // User logged in already or has just logged in.
-          console.log(
-            "USER LOGGEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD " + user.uid
-          );
           this.setState({ currentUid: user.uid });
         } else {
           // User not logged in or has just logged out.
         }
         var currentUser = this.state.currentUid;
-        console.log("UID " + uid);
-        console.log("current user " + currentUser);
 
         this.checkFollowers();
       });
@@ -90,7 +87,6 @@ export const dynamicItem = (
               console.log(error);
             }
           }
-          console.log("ARRAY " + this.state.followingArray);
         },
         function (errorObject) {
           console.log("The read failed: " + errorObject.code);
@@ -99,20 +95,14 @@ export const dynamicItem = (
     };
 
     handleFollow = () => {
-      console.log(this.state.followingArray.length);
-      let flag = false;
-      var currentUser = this.state.currentUid;
       if (this.state.currentUid != uid) {
-        for (let i = 0; i < this.state.followingArray.length; i++) {
-          if (uid == this.state.followingArray[i]) {
-            flag = true;
-            this.unfollow();
-          }
+        if (this.state.followingArray.includes(uid)) {
+          this.unfollow();
+        } else {
+          this.follow();
         }
       }
-      if (!flag || this.state.followingArray.length == 0) {
-        this.follow();
-      }
+
       this.checkFollowers();
       this.setState(this.state);
       this.forceUpdate();
@@ -120,8 +110,6 @@ export const dynamicItem = (
 
     // FOLLOW METHOD
     follow = () => {
-      console.log("UID " + uid);
-      console.log("UID CURRENT USER" + this.state.currentUid);
       var currentUser = this.state.currentUid;
       var ref = firebase
         .database()
@@ -138,128 +126,105 @@ export const dynamicItem = (
       ref.push({ userID: ax });
     };
 
-    // UNFOLLOW METHOD
+    // UNFOLLOW METHOD (removes follows/uid and followed_by/uid entries)
     unfollow = () => {
-      //flag = true;
       var currentUser = this.state.currentUid;
-      // console.log("dentroooooooooooooooooo");
-      // var ref = firebase.database().ref("social/" + currentUser);
-
-      // ref.child("/follows").on("value", (snapshot) => {
-      //   console.log(snapshot);
-      //   for (var propss in snapshot.val()) {
-      //     console.log(snapshot.val()[propss]);
-      //     console.log(snapshot.val()[propss].userID + " UID " + uid);
-      //     if (snapshot.val()[propss].userID == uid) {
-      var ref = firebase.database().ref("social/" + currentUser + "/follows");
+      var ref = firebase
+        .database()
+        .ref("social/" + currentUser)
+        .child("/follows");
       ref.once("value").then(function (snapshot) {
         snapshot.forEach(function (childSnapshot) {
           let lol = JSON.stringify(childSnapshot);
-          console.log(lol);
           lol = lol.replace(/"}/, "");
           lol = lol.replace(/{"userID":"/, "");
 
-          console.log("XXXXXXXXXXXXXXXX " + lol);
           if (lol == uid) {
-            console.log("XDD LOL " + childSnapshot.key);
             var ref = firebase
               .database()
               .ref("social/" + currentUser + "/follows/" + childSnapshot.key)
               .remove()
               .then(() => {
-                console.log("REMOVE OKKKKKKKKKKKKKKKKKKKKKK");
+                console.log("REMOVE follows OK");
               });
           }
         });
       });
-      //}
-      //  }
-      //});
-      console.log("ADRIAN " + uid);
-      var ref = firebase.database().ref("social/" + uid);
-      ref.child("/followed_by").on("value", (snapshot) => {
-        console.log(snapshot);
-        for (var propss in snapshot.val()) {
-          console.log(snapshot.val()[propss]);
-          console.log(snapshot.val()[propss].userID + " UID " + uid);
-          if (snapshot.val()[propss].userID == uid) {
-            var ref = firebase.database().ref("social/" + uid + "/followed_by");
-            ref.once("value").then(function (snapshot) {
-              snapshot.forEach(function (childSnapshot) {
-                let lol = JSON.stringify(childSnapshot);
-                console.log(lol);
-                lol = lol.replace(/"}/, "");
-                lol = lol.replace(/{"userID":"/, "");
 
-                console.log("XXXXXXXXXXXXXXXXOOOO " + lol);
-                if (lol == uid) {
-                  console.log("XDD LOL " + childSnapshot.key);
-                  var ref = firebase
-                    .database()
-                    .ref("social/" + uid + "/followed_by/" + childSnapshot.key)
-                    .remove()
-                    .then(() => {
-                      console.log("ZZZZ " + uid);
-                      console.log("REMOVE OKKKKKKKKKKKKKKKKKKKKKK");
-                    });
-                }
-              });
+      var ref = firebase
+        .database()
+        .ref("social/" + uid)
+        .child("/followed_by");
+      ref.once("value").then(function (snapshot) {
+        snapshot.forEach(function (childSnapshot) {
+          let lol = JSON.stringify(childSnapshot);
+          lol = lol.replace(/"}/, "");
+          lol = lol.replace(/{"userID":"/, "");
+
+          var ref = firebase
+            .database()
+            .ref("social/" + uid + "/followed_by/" + childSnapshot.key)
+            .remove()
+            .then(() => {
+              console.log("REMOVE followed by ok");
             });
-          }
-        }
+        });
       });
+      this.setState(this.state);
     };
 
+    // Returns a icon which depends of the user's status followed / unfollowed / same user (icon invisible)
     isFollowing = () => {
-      if (uid == this.state.currentUid) {
+      if (this.state.followingArray.includes(uid)) {
         return (
           <Icon
-            style={{ marginRight: "3%" }}
-            size={20}
             name={"user-check"}
-            color="transparent"
+            color="white"
+            size={20}
+            style={{ marginRight: "3%" }}
+            onPress={this.handleFollow}
           />
         );
       }
-      console.log("ARRAY LENGTH " + this.state.followingArray.length);
-      for (let i = 0; i < this.state.followingArray.length; i++) {
-        console.log("UID " + uid);
-        if (uid == this.state.followingArray[i]) {
-          console.log("FOLLOWEDDDDDDDDDDDDDDDDDDDDDDDDDDD");
-          return (
-            <Icon
-              name={"user-check"}
-              color="white"
-              size={20}
-              style={{ marginRight: "3%" }}
-              onPress={this.handleFollow}
-            />
-          );
-        }
+
+      if (!this.state.followingArray.includes(uid)) {
+        return (
+          <Icon
+            name={"user-plus"}
+            color="white"
+            size={20}
+            style={{ marginRight: "3%" }}
+            onPress={this.handleFollow}
+          />
+        );
+      }
+    };
+
+    // If user has upload photo returns it, else returns default photo
+    getPhoto = () => {
+      if (avatarURL == undefined) {
+        return (
+          <Thumbnail
+            source={{
+              uri:
+                "https://firebasestorage.googleapis.com/v0/b/joinparty-4e37b.appspot.com/o/defaultProfile.png?alt=media&token=18296d12-e579-4401-bec5-22aa325ecc01",
+            }}
+          />
+        );
       }
       return (
-        <Icon
-          name={"user-plus"}
-          color="white"
-          size={20}
-          style={{ marginRight: "3%" }}
-          onPress={this.handleFollow}
+        <Thumbnail
+          source={{
+            uri: avatarURL,
+          }}
         />
       );
-      this.setState(this.state);
-      this.forceUpdate();
     };
 
     render() {
       return (
         <ListItem avatar>
-          <Left>
-            <Thumbnail
-              source={{
-                uri: avatarURL,
-              }}
-            />
-          </Left>
+          <Left>{this.getPhoto()}</Left>
           <Body>
             <Text style={styles.textUser}>{username}</Text>
             <Text note style={styles.textDescription}>
