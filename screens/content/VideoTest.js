@@ -6,7 +6,8 @@
  * @flow strict-local
  */
 import * as firebase from "firebase";
-import React from "react";
+import React from 'react';
+import { Fab } from "native-base";
 import {
   SafeAreaView,
   StyleSheet,
@@ -17,7 +18,9 @@ import {
   TouchableOpacity,
   Dimensions,
   Alert,
-} from "react-native";
+  Button
+} from 'react-native';
+import Icon from "react-native-vector-icons/FontAwesome5";
 
 import {
   RTCPeerConnection,
@@ -27,391 +30,424 @@ import {
   MediaStream,
   MediaStreamTrack,
   mediaDevices,
-  registerGlobals,
-} from "react-native-webrtc";
+  registerGlobals
+} from 'react-native-webrtc';
 
-import { db } from "./../../App";
+import {db} from "./../../App";
 
-const dimensions = Dimensions.get("window");
-const configuration = {
-  iceServers: [
-    {
-      urls: "stun:stun.l.google.com:19302",
-    },
-  ],
+var micIconProps = {
+  micIcon: "microphone",
+  bgColor: "#86b300",
 };
-const peerConnection = new RTCPeerConnection(configuration);
+
+var videoIconProps = {
+  videoIcon: "video",
+  bgColor: "#86b300",
+};
+
+const dimensions = Dimensions.get('window');
+const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
+
+import firebaseConn from "./../../Services/firebase";
+const ayylmao = new firebaseConn();
+
+let currentUserId;
+currentUserId = ayylmao.getCurrentUserId();
 
 async function makeCall() {
-  db.ref("events").on("child_added", async (snapshot) => {
-    if (snapshot.val().answer) {
-      const remoteDesc = new RTCSessionDescription(snapshot.val().answer);
+  db.ref("calls/" + currentUserId).on("child_added", async snapshot => {
+    console.log(JSON.stringify('SNAPSHOT UNDEFINED: -------------------' + JSON.stringify( snapshot.val())));
+    let lel = snapshot.val().respuestaa.answer;
+      if (lel) {
+      const remoteDesc = new RTCSessionDescription(lel);
       await peerConnection.setRemoteDescription(remoteDesc);
       console.log("got peer connection");
     }
   });
   const offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer);
-  db.ref("events").set({
-    offer: offer,
-  });
+  let objetoLlamada = {
+    offer: {
+      type: offer.type,
+      sdp: offer.sdp,
+    },
+    infoUser: userdisplay,
+  };
+
+  db.ref("calls/" + knoId).push().set({ofertaa: objetoLlamada});
+  console.log('oferta enviada: ' + JSON.stringify(objetoLlamada));
 }
 
-async function answerCall() {
-  let ayyy = db.ref("events/offer");
+{
+  "users" : {
+    "userId" : {
+      "displayname" : "exempleDisplay",
+      "name" : "userName",
+      "lastname" : "userLastname",
+      "description" : "userDesription"
+    }
+  }
+}
 
-  ayyy.once("value").then(async (snapshot) => {
-    let offer = snapshot.val();
+{
+  "oferta" : {
+    "infoUser" : "diaplayName",
+    "tipoLlamada" : "individual",
+    "offer": {
+      "sdp" : "sdpInfo",
+      "type": "offer"
+    }
+  }
+}
+
+function answerCall() {
+  db.ref("calls/" + currentUserId).once("value").then(async snapshot => {
+    let lelaso;
+    for (var propss in snapshot.val()) { lelaso = propss; }
+
+    let ofertaaa = snapshot.val()[lelaso];
+
+    console.log('MECAGOENDIOS --------------------------------------------------------------- ' + JSON.stringify(ofertaaa))
+    let offer = ofertaaa.ofertaa.offer;
+    console.log('OFEEEERA anserCall()' + offer);
     peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
     const answer = await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(answer);
-    db.ref("events").push().set({
-      answer: answer,
-    });
-    console.log("sadasdsa");
+    let objetoRespuesta = {
+      answer: {
+        type: answer.type,
+        sdp: answer.sdp,
+      },
+      infoUser: userdisplay,
+    };
+
+    db.ref("calls/" + knoId).push().set({respuestaa: objetoRespuesta});
+    console.log('HEMOS TERMINADO');
+  });
+}
+
+function hacerAviso() {
+  Alert.alert(
+    "quieres llamar a " + elkno,
+    "di algo perra",
+    [
+      {
+        text: "Si",
+        onPress: () => {
+          makeCall();
+        },
+      },
+      {
+        text: "No",
+        onPress: () => {
+          Alert.alert("No has llamado");
+        },
+      },
+    ],
+    { cancelable: false }
+  );
+}
+
+function crearTrigger() {
+  db.ref("calls/" + currentUserId).on("child_added", (snapshot) => {
+      let offer = snapshot.val().ofertaa.offer;
+      if (offer) {
+        Alert.alert(
+          "te esta llamando " + elkno,
+          "quieres contestar?",
+          [
+            {
+              text: "Si",
+              onPress: () => {
+                answerCall();
+              },
+            },
+            {
+              text: "No",
+              onPress: () => {
+                Alert.alert("ere un mierda");
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      }
   });
 }
 
 export default class VideoTest extends React.Component {
-<<<<<<< HEAD
     constructor(props) {
       super(props)
-      this.setRemoteDescription = this.setRemoteDescription.bind(this);
 
       this.state = {
         localStream: null,
-        remoteStream: null,
+        remoteStream: [],
       }
 
       this.sdp
-      this.socket = null
       this.candidates = []
+      this.data = props.navigation.state.params.data;
+
     }
 
     componentDidMount = () => {
 
-      db.ref("candidates").on("child_added", async snapshot => {
+      var peerConnection = [];
+
+      if (this.data.tipoLlamada.toLowerCase() === "individual") {
+        peerConnection.push(new RTCPeerConnection(configuration));
+      } else if (this.data.tipoLlamada.toLowerCase() === "grupal") {
+        db.ref("groups/" + this.data.groupId + "/room").once("value").then(async snapshot => {
+          let aycaramba = JSON.parse(snapshot.val());
+          for (let offer in aycaramba) {
+            peerConnection.push(new RTCPeerConnection(configuration));
+          }
+        });
+      }
+
+      hacerAviso();
+      crearTrigger();
+
+      console.log('data ----------------------------' + this.data);
+
+      db.ref("calls/" + currentUserId + "/candidates").on("child_added", async snapshot => {
         var lel = snapshot.val().iceCandidate;
         if (lel) {
           try {
-            await peerConnection.addIceCandidate(lel);
+            for (let ayay in peerConnection) { await ayay.addIceCandidate(lel);  }
           } catch (e) {
-            console.error('Error adding received ice candidate', e);
+            console.log('Error adding received ice candidate', e);
           }
         }
       })
 
-      // Listen for connectionstatechange on the local RTCPeerConnection
-      peerConnection.addEventListener('connectionstatechange', event => {
-          if (peerConnection.connectionState === 'connected') {
-              console.log('YOOO SOY GIGANTEEE')
+      for (let ayay in peerConnection) {
+        // Listen for connectionstatechange on the local RTCPeerConnection
+        ayay.addEventListener('connectionstatechange', event => {
+            if (ayay.connectionState === 'connected') {
+                console.log('YOOO SOY GIGANTEEE')
+            }
+        });
+
+        ayay.onicecandidate = (e) => {
+          // send the candidates to the remote peer
+          // see addCandidate below to be triggered on the remote peer
+
+          if (e.candidate) {
+            // console.log(JSON.stringify(e.candidate))
+            ayay.sendToPeer(e.candidate)
           }
-      });
-
-      peerConnection.onicecandidate = (e) => {
-        // send the candidates to the remote peer
-        // see addCandidate below to be triggered on the remote peer
-=======
-  constructor(props) {
-    super(props);
-    this.setRemoteDescription = this.setRemoteDescription.bind(this);
-    this.state = {
-      localStream: null,
-      remoteStream: null,
-    };
-
-    this.sdp;
-    this.socket = null;
-    this.candidates = [];
-  }
->>>>>>> 15cc9c1dff32638372cbcd2b1bcab6116daecedc
-
-  componentDidMount = () => {
-    db.ref("candidates").on("child_added", async (snapshot) => {
-      var lel = snapshot.val().iceCandidate;
-      if (lel) {
-        try {
-          await peerConnection.addIceCandidate(lel);
-        } catch (e) {
-          console.error("Error adding received ice candidate", e);
         }
+
+        // triggered when there is a change in connection state
+        ayay.oniceconnectionstatechange = (e) => {
+          console.log("peerConnection.oniceconnectionstatechange" + e)
+        }
+
       }
-    });
 
-<<<<<<< HEAD
-      // triggered when there is a change in connection state
-      peerConnection.oniceconnectionstatechange = (e) => {
-        console.log("peerConnection.oniceconnectionstatechange" + e)
-=======
-    // Listen for connectionstatechange on the local RTCPeerConnection
-    peerConnection.addEventListener("connectionstatechange", (event) => {
-      if (peerConnection.connectionState === "connected") {
-        console.log("YOOO SOY GIGANTEEE");
->>>>>>> 15cc9c1dff32638372cbcd2b1bcab6116daecedc
+      peerConnection[0].onaddstream = (e) => {
+        debugger
+
+        remoteStream.push(e.stream);
       }
-    });
 
-    peerConnection.onicecandidate = (e) => {
-      // send the candidates to the remote peer
-      // see addCandidate below to be triggered on the remote peer
-
-<<<<<<< HEAD
       const success = (stream) => {
         console.log("success" + stream.toURL())
         this.setState({
           localStream: stream
         })
-        peerConnection.addStream(stream)
-=======
-      if (e.candidate) {
-        // console.log(JSON.stringify(e.candidate))
-        this.sendToPeer(e.candidate);
->>>>>>> 15cc9c1dff32638372cbcd2b1bcab6116daecedc
+        peerConnection[0].addStream(stream)
       }
-    };
 
-    // triggered when there is a change in connection state
-    peerConnection.oniceconnectionstatechange = (e) => {
-      console.log("peerConnection.oniceconnectionstatechange" + e);
-    };
+      const failure = (e) => {
+        console.log('getUserMedia Error: ', e)
+      }
 
-    peerConnection.onaddstream = (e) => {
-      debugger;
-      this.setState({
-        remoteStream: e.stream,
-      });
-    };
-
-    const success = (stream) => {
-      console.log("success" + stream.toURL());
-      this.setState({
-        localStream: stream,
-      });
-      peerConnection.addStream(stream);
-    };
-
-    const failure = (e) => {
-      console.log("getUserMedia Error: ", e);
-    };
-
-    let isFront = true;
-    mediaDevices.enumerateDevices().then((sourceInfos) => {
-      console.log(sourceInfos);
-      let videoSourceId;
-      for (let i = 0; i < sourceInfos.length; i++) {
-        const sourceInfo = sourceInfos[i];
-        if (
-          sourceInfo.kind == "videoinput" &&
-          sourceInfo.facing == (isFront ? "front" : "environment")
-        ) {
-          videoSourceId = sourceInfo.deviceId;
+      let isFront = true;
+      mediaDevices.enumerateDevices().then(sourceInfos => {
+        console.log(sourceInfos);
+        let videoSourceId;
+        for (let i = 0; i < sourceInfos.length; i++) {
+          const sourceInfo = sourceInfos[i];
+          if (sourceInfo.kind == "videoinput" && sourceInfo.facing == (isFront ? "front" : "environment")) {
+            videoSourceId = sourceInfo.deviceId;
+          }
         }
-      }
 
-<<<<<<< HEAD
+        const constraints = {
+          audio: true,
+          video: {
+            mandatory: {
+              minWidth: 500, // Provide your own width, height and frame rate here
+              minHeight: 300,
+              minFrameRate: 30
+            },
+            facingMode: (isFront ? "user" : "environment"),
+            optional: (videoSourceId ? [{
+              sourceId: videoSourceId
+            }] : [])
+          }
+        }
+
         mediaDevices.getUserMedia(constraints)
           .then(success)
           .catch(failure);
       });
     }
+
+    muteMic() {
+      this.state.localStream.getAudioTracks()[0].enabled = !this.state.localStream.getAudioTracks()[0]
+        .enabled;
+      if (this.state.localStream.getAudioTracks()[0].enabled) {
+        micIconProps.micIcon = "microphone";
+        micIconProps.bgColor = "#86b300";
+      } else {
+        micIconProps.micIcon = "microphone-slash";
+        micIconProps.bgColor = "#b30000";
+      }
+    }
+
+    disableVideo() {
+      this.state.localStream.getVideoTracks()[0].enabled = !this.state.localStream.getVideoTracks()[0]
+        .enabled;
+      if (this.state.localStream.getVideoTracks()[0].enabled) {
+        videoIconProps.videoIcon = "video";
+        videoIconProps.bgColor = "#86b300";
+      } else {
+        videoIconProps.videoIcon = "video-slash";
+        videoIconProps.bgColor = "#b30000";
+      }
+    }
+
     sendToPeer = (payload) => {
-      db.ref("candidates").push().set({
+      db.ref("/calls/"+ knoId +"/candidates").push().set({
         'iceCandidate': payload
       });
-    }
-
-    createOffer = () => {
-      console.log('Offer')
-      makeCall();
-    }
-
-    createAnswer = () => {
-      answerCall();
     }
 
     setRemoteDescription = () => {
       // retrieve and parse the SDP copied from the remote peer
       const desc = JSON.parse(this.sdp)
-=======
-      const constraints = {
-        audio: true,
-        video: {
-          mandatory: {
-            minWidth: 500, // Provide your own width, height and frame rate here
-            minHeight: 300,
-            minFrameRate: 30,
-          },
-          facingMode: isFront ? "user" : "environment",
-          optional: videoSourceId
-            ? [
-                {
-                  sourceId: videoSourceId,
-                },
-              ]
-            : [],
-        },
-      };
 
-      mediaDevices.getUserMedia(constraints).then(success).catch(failure);
-    });
-  };
-  sendToPeer = (payload) => {
-    db.ref("candidates").push().set({
-      iceCandidate: payload,
-    });
-  };
->>>>>>> 15cc9c1dff32638372cbcd2b1bcab6116daecedc
+      // set sdp as remote description
+      peerConnection.setRemoteDescription(new RTCSessionDescription(desc))
+    }
 
-  createOffer = () => {
-    console.log("Offer");
-    makeCall();
-  };
+    addCandidate = () => {
+      // retrieve and parse the Candidate copied from the remote peer
+      // const candidate = JSON.parse(this.textref.value)
+      // console.log('Adding candidate:', candidate)
 
-  createAnswer = () => {
-    answerCall();
-  };
+      // add the candidate to the peer connection
+      // this.pc.addIceCandidate(new RTCIceCandidate(candidate))
 
-  setRemoteDescription = () => {
-    // retrieve and parse the SDP copied from the remote peer
-    const desc = JSON.parse(this.sdp);
+      this.candidates.forEach(candidate => {
+        console.log(JSON.stringify(candidate))
+        peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+      });
+    }
 
-    // set sdp as remote description
-    peerConnection.setRemoteDescription(new RTCSessionDescription(desc));
-  };
 
-  addCandidate = () => {
-    // retrieve and parse the Candidate copied from the remote peer
-    // const candidate = JSON.parse(this.textref.value)
-    // console.log('Adding candidate:', candidate)
+    render() {
+        const {
+            localStream,
+            remoteStream,
+        } = this.state;
 
-    // add the candidate to the peer connection
-    // this.pc.addIceCandidate(new RTCIceCandidate(candidate))
+        var streams = [];
 
-    this.candidates.forEach((candidate) => {
-      console.log(JSON.stringify(candidate));
-      peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-    });
-  };
+        for (var i = 1 ; i < remoteStream.lenght-1 ; i++) {
+          streams.push(<RTCView
+              key={2}
+              mirror={true}
+              style={styles.remoteContainer}
+              objectFit='contain'
+              streamURL={remoteStream[i] && remoteStream[i].toURL()}
+          />);
+        }
 
-  render() {
-    const { localStream, remoteStream } = this.state;
-
-    const remoteVideo = remoteStream ? (
-      <RTCView
-        key={2}
-        mirror={true}
-        style={{ ...styles.rtcViewRemote }}
-        objectFit="contain"
-        streamURL={remoteStream && remoteStream.toURL()}
-      />
-    ) : (
-      <View style={{ padding: 15 }}>
-        <Text style={{ fontSize: 22, textAlign: "center", color: "white" }}>
-          Waiting for Peer connection ...
-        </Text>
-      </View>
-    );
-
-    return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <StatusBar backgroundColor="blue" barStyle={"dark-content"} />
-        <View style={{ ...styles.buttonsContainer }}>
-          <View style={{ flex: 1 }}>
-            <TouchableOpacity onPress={this.createOffer}>
-              <View style={styles.button}>
-                <Text style={{ ...styles.textContent }}>Call</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={{ flex: 1 }}>
-            <TouchableOpacity onPress={this.createAnswer}>
-              <View style={styles.button}>
-                <Text style={{ ...styles.textContent }}>Answer</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={{ ...styles.videosContainer }}>
-          <View
-            style={{
-              position: "absolute",
-              zIndex: 1,
-              bottom: 10,
-              right: 10,
-              width: 100,
-              height: 200,
-              backgroundColor: "black", //width: '100%', height: '100%'
-            }}
-          >
-            <View style={{ flex: 1 }}>
-              <TouchableOpacity
-                onPress={() => localStream._tracks[1]._switchCamera()}
-              >
-                <View>
-                  <RTCView
-                    key={1}
-                    zOrder={0}
-                    objectFit="cover"
-                    style={{ ...styles.rtcView }}
-                    streamURL={localStream && localStream.toURL()}
-                  />
+        const remoteVideo = remoteStream ?
+            (
+              <RTCView
+                  key={2}
+                  mirror={true}
+                  style={styles.remoteContainer}
+                  objectFit='contain'
+                  streamURL={remoteStream[0] && remoteStream[0].toURL()}
+              />
+            ) :
+            (
+                <View style={styles.remoteContainer}>
+                    <Text style={{ fontSize:22, textAlign: 'center', color: 'white' }}>Esperando respuesta...</Text>
                 </View>
-              </TouchableOpacity>
+            );
+
+        return (
+          <SafeAreaView style={{ flex: 1 }}>
+            <View style={styles.remoteContainer}>
+              <View style={styles.remoteStreamContainer}>{remoteVideo}</View>
+              <Fab
+                direction="down"
+                position="topRight"
+                active={this.state.active}
+                style={{ backgroundColor: "#86b300" }}
+                onPress={() => this.setState({ active: !this.state.active })}
+              >
+                <Icon name="phone-square" />
+                <Button style={{ backgroundColor: "#b30000" }}>
+                  <Icon name="phone-slash" />
+                </Button>
+                <Button
+                  style={{ backgroundColor: micIconProps.bgColor }}
+                  onPress={() => this.muteMic()}
+                >
+                  <Icon name={micIconProps.micIcon} />
+                </Button>
+                <Button
+                  style={{ backgroundColor: videoIconProps.bgColor }}
+                  onPress={() => this.disableVideo()}
+                >
+                  <Icon name={videoIconProps.videoIcon} />
+                </Button>
+                <Button
+                  style={{ backgroundColor: "#86b300" }}
+                  onPress={() => this.state.localStream._tracks[1]._switchCamera()}
+                >
+                  <Icon name="exchange-alt" />
+                </Button>
+              </Fab>
+              <ScrollView horizontal={true} style={styles.scrollContainer}>
+                <RTCView
+                  objectFit="cover"
+                  style={styles.remoteStreamContainer}
+                  streamURL={localStream && localStream.toURL()}
+                />
+                {streams}
+              </ScrollView>
             </View>
-          </View>
-          <ScrollView style={{ ...styles.scrollView }}>
-            <View
-              style={{
-                flex: 1,
-                width: "100%",
-                backgroundColor: "black",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {remoteVideo}
-            </View>
-          </ScrollView>
-        </View>
-      </SafeAreaView>
-    );
-  }
-}
+          </SafeAreaView>
+        );
+    }
+};
 
 const styles = StyleSheet.create({
-  buttonsContainer: {
-    flexDirection: "row",
-  },
-  button: {
-    margin: 5,
-    paddingVertical: 10,
-    backgroundColor: "lightgrey",
-    borderRadius: 5,
-  },
-  textContent: {
-    //fontFamily: 'Sarala',
-    fontSize: 20,
-    textAlign: "center",
-  },
-  videosContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  rtcView: {
-    width: 100, //dimensions.width,
-    height: 200, //dimensions.height / 2,
+  remoteContainer: {
+    width: dimensions.width,
+    height: dimensions.height,
     backgroundColor: "black",
   },
-  scrollView: {
-    flex: 1,
-    // flexDirection: 'row',
-    backgroundColor: "teal",
-    padding: 15,
+  scrollContainer: {
+    width: dimensions.width,
+    height: dimensions.height * 0.25,
+    position: "absolute",
+    bottom: "4%",
   },
-  rtcViewRemote: {
-    width: dimensions.width - 30,
-    height: 200, //dimensions.height / 2,
-    backgroundColor: "black",
+  remoteStreamContainer: {
+    borderWidth: 2,
+    backgroundColor: "red",
+    width: dimensions.height * 0.55,
+    width: dimensions.width * 0.25,
+    margin: 10,
   },
 });

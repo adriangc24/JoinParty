@@ -1,11 +1,9 @@
 /**
- * Pantalla per a trucades de tot tipus
- * autor: jgomez
  *
  * @format
  * @flow strict-local
  */
-import React from 'react';
+import React from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -13,10 +11,11 @@ import {
   View,
   Dimensions,
   Alert,
-  Button
-} from 'react-native';
+  Button,
+  Text,
+} from "react-native";
 
-import { Fab } from 'native-base';
+import { Fab } from "native-base";
 
 import {
   RTCPeerConnection,
@@ -26,108 +25,284 @@ import {
   MediaStream,
   MediaStreamTrack,
   mediaDevices,
-  registerGlobals
-} from 'react-native-webrtc';
+  registerGlobals,
+} from "react-native-webrtc";
 
 import Icon from "react-native-vector-icons/FontAwesome5";
-import firebaseConn from "./../Services/firebase";
 
-const dimensions = Dimensions.get('window');
-
-const ayylmao = new firebaseConn;
+const dimensions = Dimensions.get("window");
+// import firebaseConn from "./../Services/firebase";
+import * as firebase from "firebase";
+// const ayylmao = new firebaseConn();
 
 var micIconProps = {
-  'micIcon' : 'microphone',
-  'bgColor' : '#86b300'
+  micIcon: "microphone",
+  bgColor: "#86b300",
 };
 
 var videoIconProps = {
-  'videoIcon' : 'video',
-  'bgColor' : '#86b300'
+  videoIcon: "video",
+  bgColor: "#86b300",
 };
 
 export default class VideoDef extends React.Component {
-    constructor(props) {
-      super(props)
-      this.state = {
-        localStream: null,
-        remoteStream: [],
+  constructor(props) {
+    super(props);
+    //this.setRemoteDescription = this.setRemoteDescription.bind(this);
+    //this.enviarRespuesta = this.enviarRespuesta.bind(this);
+
+    this.state = {
+      localStream: null,
+      remoteStream: null,
+    };
+
+    this.sdp;
+    this.candidates = [];
+  }
+
+  componentDidMount = () => {
+    //PROVISIONAL WEBRTC ----------------------------------------------------
+    const configuration = {
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+    };
+    var peerConnection = new RTCPeerConnection(configuration);
+
+    var candidatess = [];
+
+    const db = firebase.database();
+
+    /*peerConnection.onicecandidate = (e) => {
+              // send the candidates to the remote peer
+              // see addCandidate below to be triggered on the remote peer
+              console.log('WEOIWOEPIWQOPEIWQOPEIOPQ - '+ e)
+              if (e.candidate) {
+                console.log('candidatos' + JSON.stringify(e.candidate))
+                candidatess.push(e.candidate);
+              }
+            }*/
+
+    peerConnection.addEventListener("icecandidate", (event) => {
+      if (event.candidate) {
+        const json = event.candidate.toJSON();
+        candidatess.push(json);
       }
+    });
 
-      this.sdp
-      this.candidates = []
-    }
+    // triggered when there is a change in connection state
+    peerConnection.oniceconnectionstatechange = (e) => {
+      console.log("peerConnection.oniceconnectionstatechange" + e);
+    };
 
-    componentDidMount = () => {
-      const success = (stream) => {
-        console.log("success" + JSON.stringify(stream));
+    peerConnection.ontrack = (e) => {
+      debugger;
+      this.setState({
+        remoteStream: e.stream,
+      });
+      console.log("stream añadido");
+    };
 
-        this.setState({
-          localStream: stream
-        })
-      }
+    let currentUserId = ayylmao.getCurrentUserId();
 
-      const failure = (e) => {
-        console.log('getUserMedia Error: ', e)
-      }
+    let llamador;
 
-      let isFront = false;
-      mediaDevices.enumerateDevices().then(sourceInfos => {
-        console.log(sourceInfos);
-        let videoSourceId;
-        for (let i = 0; i < sourceInfos.length; i++) {
-          const sourceInfo = sourceInfos[i];
-          if (sourceInfo.kind == "videoinput" && sourceInfo.facing == (isFront ? "front" : "environment")) {
-            videoSourceId = sourceInfo.deviceId;
-          }
+    crearTrigger();
+
+    enviarOferta();
+
+    let estoesUNPUTOBUG = "0";
+
+    async function crearTrigger() {
+      db.ref("calls/" + currentUserId).on("child_added", (snapshot) => {
+        llamador = snapshot.val();
+        console.log("llamador: " + JSON.stringify(llamador));
+        estoesUNPUTOBUG++;
+        console.log("ESTOESUNPUTOBUG " + estoesUNPUTOBUG);
+        console.log("JOAAAAAAN-----: " + JSON.stringify(llamador));
+        if (llamador.ofertaa.offer) {
+          Alert.alert(
+            "Llamada entrante de " + llamador.ofertaa.infoUser,
+            "quieres contestar?",
+            [
+              {
+                text: "Si",
+                onPress: () => {
+                  peerConnection = new RTCPeerConnection(configuration);
+                  console.log(
+                    "LLAMADOR OFERTA OFER: " +
+                      JSON.stringify(llamador.ofertaa.offer)
+                  );
+                  peerConnection
+                    .setRemoteDescription(
+                      new RTCSessionDescription(llamador.ofertaa.offer)
+                    )
+                    .then(() => {
+                      enviarRespuesta();
+                      console.log("got peer connection");
+                    });
+                },
+              },
+              {
+                text: "No",
+                onPress: () => {
+                  Alert.alert("has rechazado la llamada");
+                },
+              },
+            ],
+            { cancelable: false }
+          );
+        } else if (llamador.respuestaa.answer) {
+          Alert.alert("te han respondido hulio");
+          peerConnection.setRemoteDescription(
+            new RTCSessionDescription(llamador.respuestaa.answer)
+          );
+        } else {
+          Alert.alert("nadie te quiere " + JSON.stringify(llamador));
         }
-
-        const constraints = {
-          audio: true,
-          video: {
-            mandatory: {
-              minWidth: 500,
-              minHeight: 300,
-              minFrameRate: 30
-            },
-            facingMode: (isFront ? "user" : "environment"),
-            optional: (videoSourceId ? [{
-              sourceId: videoSourceId
-            }] : [])
-          }
-        }
-
-        mediaDevices.getUserMedia(constraints)
-          .then(success)
-          .catch(failure);
       });
     }
 
+    console.log("llamador FUERA: " + llamador);
 
-
-    muteMic() {
-      this.state.localStream.getAudioTracks()[0].enabled = !this.state.localStream.getAudioTracks()[0].enabled;
-      if (this.state.localStream.getAudioTracks()[0].enabled) {
-        micIconProps.micIcon = 'microphone';
-        micIconProps.bgColor = '#86b300';
-      } else {
-        micIconProps.micIcon = 'microphone-slash';
-        micIconProps.bgColor = '#b30000';
+    db.ref("calls/" + currentUserId + "/candidates").on(
+      "child_added",
+      async (snapshot) => {
+        var lel = snapshot.val().iceCandidate;
+        if (lel) {
+          try {
+            const candidate = new RTCIceCandidate(lel.iceCandidate);
+            console.log("añadiendo iceCandidate: " + candidate);
+            await peerConnection.addIceCandidate(candidate);
+          } catch (e) {
+            console.error("Error adding received ice candidate", e);
+          }
+        }
       }
+    );
+
+    let userdisplay = currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2" ? "adriangc24" : "juanbass";
+    let elkno = currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2" ? "juanbass" : "adriangc24";
+    let knoId = currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2" ? "4hwdaoqyoyRj3f1IH0hD4BXZZNT2" : "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2";
+
+    async function enviarOferta() {
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+
+      console.log("enviando oferta a " + knoId);
+
+      let objetoLlamada = {
+        candidates: candidatess,
+        offer: {
+          type: offer.type,
+          sdp: offer.sdp,
+        },
+        infoUser: userdisplay,
+      };
+
+      db.ref("calls/" + knoId)
+        .push()
+        .set({
+          ofertaa: objetoLlamada,
+        });
+
+      console.log("oferta enviada a: " + elkno);
     }
 
-    disableVideo() {
-      this.state.localStream.getVideoTracks()[0].enabled = !this.state.localStream.getVideoTracks()[0].enabled;
-      if (this.state.localStream.getVideoTracks()[0].enabled) {
-        videoIconProps.videoIcon = 'video';
-        videoIconProps.bgColor = '#86b300';
-      } else {
-        videoIconProps.videoIcon = 'video-slash';
-        videoIconProps.bgColor = '#b30000';
-      }
+    async function enviarRespuesta() {
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+
+      console.log("ENVIANDO RESPUESTA");
+
+      let objetoRespuesta = {
+        candidates: candidatess,
+        answer: {
+          type: answer.type,
+          sdp: answer.sdp,
+        },
+        infoUser: userdisplay,
+      };
+
+      db.ref("calls/" + knoId)
+        .push()
+        .set({
+          respuestaa: objetoRespuesta,
+        });
     }
 
-    /*
+    //FIN WEBRTC ----------------------------------------------------
+
+    const success = (stream) => {
+      console.log("success" + JSON.stringify(stream));
+
+      this.setState({
+        localStream: stream,
+      });
+      peerConnection.addStream(stream);
+    };
+
+    const failure = (e) => {
+      console.log("getUserMedia Error: ", e);
+    };
+
+    let isFront = false;
+    mediaDevices.enumerateDevices().then((sourceInfos) => {
+      console.log(sourceInfos);
+      let videoSourceId;
+      for (let i = 0; i < sourceInfos.length; i++) {
+        const sourceInfo = sourceInfos[i];
+        if (sourceInfo.kind == "videoinput" && sourceInfo.facing == (isFront ? "front" : "environment")) {
+          videoSourceId = sourceInfo.deviceId;
+        }
+      }
+
+      const constraints = {
+        audio: true,
+        video: {
+          mandatory: {
+            minWidth: 500,
+            minHeight: 300,
+            minFrameRate: 30,
+          },
+          facingMode: isFront ? "user" : "environment",
+          optional: videoSourceId
+            ? [
+                {
+                  sourceId: videoSourceId,
+                },
+              ]
+            : [],
+        },
+      };
+
+      mediaDevices.getUserMedia(constraints).then(success).catch(failure);
+    });
+  };
+
+  muteMic() {
+    this.state.localStream.getAudioTracks()[0].enabled = !this.state.localStream.getAudioTracks()[0]
+      .enabled;
+    if (this.state.localStream.getAudioTracks()[0].enabled) {
+      micIconProps.micIcon = "microphone";
+      micIconProps.bgColor = "#86b300";
+    } else {
+      micIconProps.micIcon = "microphone-slash";
+      micIconProps.bgColor = "#b30000";
+    }
+  }
+
+  disableVideo() {
+    this.state.localStream.getVideoTracks()[0].enabled = !this.state.localStream.getVideoTracks()[0]
+      .enabled;
+    if (this.state.localStream.getVideoTracks()[0].enabled) {
+      videoIconProps.videoIcon = "video";
+      videoIconProps.bgColor = "#86b300";
+    } else {
+      videoIconProps.videoIcon = "video-slash";
+      videoIconProps.bgColor = "#b30000";
+    }
+  }
+
+  /*
     <RTCView
         objectFit='cover'
         style={ {width: dimensions.width,height: dimensions.height} }
@@ -135,44 +310,76 @@ export default class VideoDef extends React.Component {
     />
     */
 
-    render() {
-        return (
-            <SafeAreaView style={{ flex: 1}}>
-                <View style={ styles.remoteContainer }>
-                <RTCView
-                    objectFit='cover'
-                    style={ {width: dimensions.width,height: dimensions.height} }
-                    streamURL={this.state.localStream && this.state.localStream.toURL()}
-                />
-                  <Fab
-                    direction="down"
-                    position="topRight"
-                    active={this.state.active}
-                    style={{backgroundColor: '#86b300'}}
-                    onPress={() => this.setState({ active: !this.state.active })}>
-                      <Icon name='phone-square'/>
-                      <Button style={{ backgroundColor: '#b30000' }}>
-                        <Icon name="phone-slash" />
-                      </Button>
-                      <Button style={{ backgroundColor: micIconProps.bgColor }} onPress={() => this.muteMic()}>
-                        <Icon name={micIconProps.micIcon} />
-                      </Button>
-                      <Button style={{ backgroundColor: videoIconProps.bgColor }} onPress={() => this.disableVideo()}>
-                        <Icon name={videoIconProps.videoIcon} />
-                      </Button>
-                      <Button style={{ backgroundColor: '#86b300' }} onPress={() => this.state.localStream._tracks[1]._switchCamera()} >
-                        <Icon name="exchange-alt" />
-                      </Button>
-                  </Fab>
-                  <ScrollView horizontal={true} style={styles.scrollContainer}>
-                    <View style={ styles.remoteStreamContainer }/>
-                    <View style={ styles.remoteStreamContainer }/>
-                  </ScrollView>
-                </View>
-            </SafeAreaView>
-        );
-    }
-};
+  render() {
+    const { localStream, remoteStream } = this.state;
+
+    console.log(this.state);
+
+    const remoteVideo =
+      remoteStream && remoteStream != [] ? (
+        <RTCView
+          key={2}
+          mirror={true}
+          style={styles.remoteContainer}
+          objectFit="cover"
+          streamURL={remoteStream && remoteStream.toURL()}
+        />
+      ) : (
+        <View style={styles.remoteContainer}>
+          <Text style={{ fontSize: 22, textAlign: "center", color: "white" }}>
+            Esperando respuesta...
+          </Text>
+        </View>
+      );
+
+    return (
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.remoteContainer}>
+          <View style={styles.remoteStreamContainer}>{remoteVideo}</View>
+          <Fab
+            direction="down"
+            position="topRight"
+            active={this.state.active}
+            style={{ backgroundColor: "#86b300" }}
+            onPress={() => this.setState({ active: !this.state.active })}
+          >
+            <Icon name="phone-square" />
+            <Button style={{ backgroundColor: "#b30000" }}>
+              <Icon name="phone-slash" />
+            </Button>
+            <Button
+              style={{ backgroundColor: micIconProps.bgColor }}
+              onPress={() => this.muteMic()}
+            >
+              <Icon name={micIconProps.micIcon} />
+            </Button>
+            <Button
+              style={{ backgroundColor: videoIconProps.bgColor }}
+              onPress={() => this.disableVideo()}
+            >
+              <Icon name={videoIconProps.videoIcon} />
+            </Button>
+            <Button
+              style={{ backgroundColor: "#86b300" }}
+              onPress={() => this.state.localStream._tracks[1]._switchCamera()}
+            >
+              <Icon name="exchange-alt" />
+            </Button>
+          </Fab>
+          <ScrollView horizontal={true} style={styles.scrollContainer}>
+            <RTCView
+              objectFit="cover"
+              style={styles.remoteStreamContainer}
+              streamURL={
+                this.state.localStream && this.state.localStream.toURL()
+              }
+            />
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    );
+  }
+}
 /*
 <RTCView
     objectFit='cover'
@@ -185,20 +392,19 @@ const styles = StyleSheet.create({
   remoteContainer: {
     width: dimensions.width,
     height: dimensions.height,
-    backgroundColor: 'black',
+    backgroundColor: "black",
   },
   scrollContainer: {
     width: dimensions.width,
-    height: dimensions.height * .25,
-    position: 'absolute',
-    bottom: '4%',
+    height: dimensions.height * 0.25,
+    position: "absolute",
+    bottom: "4%",
   },
-  remoteStreamContainer:{
+  remoteStreamContainer: {
     borderWidth: 2,
-    backgroundColor: 'red',
-    width: dimensions.height * .55,
-    width: dimensions.width * .25,
+    backgroundColor: "red",
+    width: dimensions.height * 0.55,
+    width: dimensions.width * 0.25,
     margin: 10,
-  }
-
+  },
 });

@@ -19,9 +19,9 @@ export default class firebaseConn {
   }
 
   hacerLlamadaIndividual(llamadoId,payload) {
-    db.ref("llamadas/" + llamadoId).push().set({
+    /*db.ref("llamadas/" + llamadoId).push().set({
       'llamada': payload
-    });
+    });*/
   }
 
 }

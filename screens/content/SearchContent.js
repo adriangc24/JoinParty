@@ -1,6 +1,7 @@
 import * as React from "react";
 import MineListItem from "./MineListItem";
 import * as firebase from "firebase";
+var defaultProfile = require("../../assets/defaultProfile.png");
 import {
   Platform,
   View,
@@ -36,21 +37,20 @@ export default class SearchContent extends React.Component {
   constructor(props) {
     super(props);
 
-    this.searchBarUser = this.searchBarUser.bind(this);
+    //this.searchBarUser = this.searchBarUser.bind(this);
     this.getListItems = this.getListItems.bind(this);
   }
   state = {
-    searchBarText: null,
     element: [],
   };
 
-  getListItems = (avatarURL, username, description, isFollowed) => {
-    return dynamicItem(avatarURL, username, description, isFollowed);
+  getListItems = (uid, avatarURL, username, description, isFollowed) => {
+    return dynamicItem(uid, avatarURL, username, description, isFollowed);
   };
 
   searchBarUser = (text) => {
-    this.setState({ searchBarText: text });
     var ref = firebase.database().ref("users");
+    console.log("000 TEXTO SEARCH BAR USER " + text);
     var query = ref
       .orderByChild("displayname")
       .startAt(text)
@@ -58,34 +58,31 @@ export default class SearchContent extends React.Component {
     query
       .once("value", function (snapshot) {
         snapshot.forEach(function (child) {
-          console.log("----------------------- child value: " + child.val());
+          console.log(JSON.stringify(child.key));
+          console.log(
+            "----------------------- child value: " + child.val().displayname
+          );
           array.push(child.val());
+          array.push(child.key);
         });
       })
       .then(() => {
         var arrayPene = [];
-        for (let i = 0; i < array.length; i++) {
-          // this.setState({
-          //   element: [
-          //     this.getListItems(
-          //       array[i].photoUrl,
-          //       array[i].displayname,
-          //       array[i].description,
-          //       true
-          //     ),
-          //   ],
-          // });
+        for (let i = 0; i < array.length; i += 2) {
+          console.log("333333333333 " + array[i + 1]);
           arrayPene.push(
             this.getListItems(
+              array[i + 1],
               array[i].photoUrl,
               array[i].displayname,
               array[i].description,
               true
             )
           );
-          console.log(this.state.element);
         }
         this.state.element = arrayPene;
+        this.setState(this.state);
+        array = [];
       });
   };
 
@@ -105,6 +102,7 @@ export default class SearchContent extends React.Component {
                   placeholder="Quieres ver algo nuevo?"
                   onChangeText={(text) => {
                     this.searchBarUser(text);
+                    this.setState(this.state);
                   }}
                 />
               </Item>
