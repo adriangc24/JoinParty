@@ -47,6 +47,7 @@ export const dynamicItem = (
       this.follow = this.follow.bind(this);
       this.checkFollowers = this.checkFollowers.bind(this);
       this.getPhoto = this.getPhoto.bind(this);
+      this.updateFollow = this.updateFollow.bind(this);
     }
     state = {
       currentUid: null,
@@ -74,12 +75,9 @@ export const dynamicItem = (
       ref.on(
         "value",
         (snapshot) => {
-          var aux = snapshot.val();
-          let lelaso;
-          for (var propss in aux) {
-            lelaso = propss;
+          for (var propss in snapshot.val()) {
             try {
-              idUsuario = aux[lelaso].userID;
+              idUsuario = snapshot.val()[propss].userID;
               this.setState({ followingArray: [] });
               array.push(idUsuario);
               this.setState({ followingArray: array });
@@ -94,16 +92,27 @@ export const dynamicItem = (
       );
     };
 
+    updateFollow = (flag) => {
+      var array = this.state.followingArray;
+      if (flag == "follow") {
+        array.push(uid);
+      } else if (flag == "unfollow") {
+        array.splice(array.indexOf(uid), 1);
+      }
+      this.setState({ followingArray: array });
+    };
+
     handleFollow = () => {
       if (this.state.currentUid != uid) {
         if (this.state.followingArray.includes(uid)) {
           this.unfollow();
+          this.updateFollow("unfollow");
         } else {
           this.follow();
+          this.updateFollow("follow");
         }
       }
 
-      this.checkFollowers();
       this.setState(this.state);
       this.forceUpdate();
     };
@@ -140,7 +149,7 @@ export const dynamicItem = (
           lol = lol.replace(/{"userID":"/, "");
 
           if (lol == uid) {
-            var ref = firebase
+            ref = firebase
               .database()
               .ref("social/" + currentUser + "/follows/" + childSnapshot.key)
               .remove()
@@ -170,7 +179,6 @@ export const dynamicItem = (
             });
         });
       });
-      this.setState(this.state);
     };
 
     // Returns a icon which depends of the user's status followed / unfollowed / same user (icon invisible)
