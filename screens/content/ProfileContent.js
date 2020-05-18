@@ -2,6 +2,7 @@ import * as React from "react";
 import * as firebase from "firebase";
 import ImagePicker from "react-native-image-picker";
 import RNFetchBlob from "react-native-fetch-blob";
+import { GoogleSignin, GoogleSigninButton } from "react-native-google-signin";
 
 var env = require("./../../env.json");
 var defaultProfile = require("../../assets/defaultProfile.png");
@@ -82,6 +83,7 @@ export default class ProfileContent extends React.Component {
     this.confirm = this.confirm.bind(this);
     this.myPhoto = this.myPhoto.bind(this);
     this.getDescription = this.getDescription.bind(this);
+    this.signOutGoogle = this.signOutGoogle.bind(this);
   }
 
   componentDidMount() {
@@ -126,7 +128,13 @@ export default class ProfileContent extends React.Component {
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel",
         },
-        { text: "Si", onPress: () => firebase.auth().signOut() },
+        {
+          text: "Si",
+          onPress: () => {
+            firebase.auth().signOut();
+            this.signOutGoogle();
+          },
+        },
       ],
       { cancelable: false }
     );
@@ -202,6 +210,15 @@ export default class ProfileContent extends React.Component {
           console.log(error);
           Alert.alert("Error: la contraseña no coincide !");
         });
+    }
+  };
+
+  signOutGoogle = async () => {
+    try {
+      await GoogleSignin.signOut();
+      this.setState({ user: null }); // Remember to remove the user from your app's state as well
+    } catch (error) {
+      console.error(error);
     }
   };
 
