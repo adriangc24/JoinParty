@@ -29,17 +29,18 @@ APP desplegada 100% en Firebase
 
 ## Construido con 🛠️
 
-* [REACT NATIVE](https://reactnative.dev/) - Framework para aplicaciones nativas basado en JS
-* [FIREBASE](https://firebase.google.com/?hl=es) - Gestor de BBD no relacional  hosting
-* [NODE JS](https://nodejs.org/es/) - Entorno de ejecución JavaScript orientado a eventos asíncronos del lado servidor
-* [EXPRESS](https://expressjs.com/es/) - Framework de Node para el despliegue de la API
+* [REACT NATIVE](https://reactnative.dev/) - Framework per aplicacions natives basat en JS
+* [NATIVE BASE](https://nativebase.io/) - Llibreria de components react native
+* [FIREBASE](https://firebase.google.com/?hl=es) - Gestor de BBD no relacional i hosting (BAAS Backend as a service)
+* [NODE JS](https://nodejs.org/es/) - Entorn d'execució JavaScript orientat a esdeveniments asíncrons del servidor
+* [WEBRTC](https://webrtc.org/) - Projecte Open source que permet establir connexions P2P amb possibilitat de fer streaming d'àudio i/o vídeo (videotrucada).
 
 ## Wiki 📖
 
 Puedes encontrar mucho más de cómo utilizar este proyecto en nuestra [Wiki](https://github.com/adriangc24/NightAdvisor/wiki/BACKLOG-SPRINT-%231)
 
 ## Diagrama Despliegue📈 
-![](https://i.ibb.co/Ykcy72x/Diagrama.png)
+![](https://ibb.co/dDxnFVM)
 
 ## Autores ✒️
 
