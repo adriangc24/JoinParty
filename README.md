@@ -40,7 +40,7 @@ APP desplegada 100% en Firebase
 Puedes encontrar mucho más de cómo utilizar este proyecto en nuestra [Wiki](https://github.com/adriangc24/NightAdvisor/wiki/BACKLOG-SPRINT-%231)
 
 ## Diagrama Despliegue📈 
-![](https://ibb.co/dDxnFVM)
+![](https://i.ibb.co/1TjH1PQ/Join-Party-Firebase-1.png)
 
 ## Autores ✒️
 
