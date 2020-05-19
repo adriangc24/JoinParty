@@ -37,11 +37,22 @@ export default class SearchContent extends React.Component {
   constructor(props) {
     super(props);
 
-    //this.searchBarUser = this.searchBarUser.bind(this);
     this.getListItems = this.getListItems.bind(this);
   }
   state = {
+    uid: null,
     element: [],
+  };
+
+  componentDidMount = () => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        // User logged in already or has just logged in.
+        this.setState({ uid: user.uid });
+      } else {
+        // User not logged in or has just logged out.
+      }
+    });
   };
 
   getListItems = (uid, avatarURL, username, description, isFollowed) => {
@@ -50,7 +61,6 @@ export default class SearchContent extends React.Component {
 
   searchBarUser = (text) => {
     var ref = firebase.database().ref("users");
-    console.log("000 TEXTO SEARCH BAR USER " + text);
     var query = ref
       .orderByChild("displayname")
       .startAt(text)
@@ -58,10 +68,6 @@ export default class SearchContent extends React.Component {
     query
       .once("value", function (snapshot) {
         snapshot.forEach(function (child) {
-          console.log(JSON.stringify(child.key).replace(/"/g, ""));
-          console.log(
-            "----------------------- child value: " + child.val().displayname
-          );
           array.push(child.val());
           let key = child.key;
           key = key.replace(/"/g, "");
@@ -71,15 +77,17 @@ export default class SearchContent extends React.Component {
       .then(() => {
         var arrayPene = [];
         for (let i = 0; i < array.length; i += 2) {
-          arrayPene.push(
-            this.getListItems(
-              array[i + 1],
-              array[i].photoUrl,
-              array[i].displayname,
-              array[i].description,
-              true
-            )
-          );
+          if (array[i + 1] != this.state.uid) {
+            arrayPene.push(
+              this.getListItems(
+                array[i + 1],
+                array[i].photoUrl,
+                array[i].displayname,
+                array[i].description,
+                true
+              )
+            );
+          }
         }
         this.state.element = arrayPene;
         this.setState(this.state);

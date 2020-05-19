@@ -29,16 +29,26 @@ import {
 import backgroundImage from "./.././assets/loginBackground.jpg";
 import logo from "./.././assets/logo.png";
 import * as firebase from "firebase";
+import { GoogleSignin, GoogleSigninButton } from "react-native-google-signin";
 
 export default class LoginScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
 
+  constructor(props) {
+    super(props);
+    this.signInWithGoogle = this.signInWithGoogle.bind(this);
+  }
+
   state = {
     email: "",
     password: "",
     errorMessage: null,
+  };
+
+  componentDidMount = () => {
+    GoogleSignin.configure();
   };
 
   handleLogin = () => {
@@ -65,6 +75,24 @@ export default class LoginScreen extends React.Component {
             "Error: credenciales incorrectas !"
           )
         );
+    }
+  };
+  signInWithGoogle = async () => {
+    try {
+      const userInfo = await GoogleSignin.signIn();
+      console.log(userInfo);
+      this.setState({ userInfo });
+      this.props.navigation.navigate("Home");
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // user cancelled the login flow
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // operation (f.e. sign in) is in progress already
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        // play services not available or outdated
+      } else {
+        // some other error happened
+      }
     }
   };
 
@@ -126,6 +154,13 @@ export default class LoginScreen extends React.Component {
                   <Text>Registrarse</Text>
                 </Button>
               </View>
+              <GoogleSigninButton
+                style={{ width: 192, height: 48 }}
+                size={GoogleSigninButton.Size.Wide}
+                color={GoogleSigninButton.Color.Light}
+                onPress={this.signInWithGoogle}
+                disabled={this.state.isSigninInProgress}
+              />
             </View>
           </ImageBackground>
           <View style={styles.forgotContainer}>

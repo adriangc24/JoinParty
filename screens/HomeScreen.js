@@ -64,7 +64,9 @@ export default class HomeScreen extends React.Component {
                 id={"add"}
                 onPress={() => {
                   //setActivePage("VideoDef"), this.forceUpdate();
-                  this.props.navigation.navigate("CallScreen", {'data':'kelokeee'});
+                  this.props.navigation.navigate("CallScreen", {
+                    data: "kelokeee",
+                  });
                 }}
               >
                 <Icon name="add-circle" style={setIconStyle("VideoTest")} />
@@ -94,7 +96,6 @@ export default class HomeScreen extends React.Component {
 }
 
 function setIconStyle(page) {
-  console.log("setting style to icon");
   if (page == props.activePage) {
     return {
       color: "#ffffff",
@@ -104,11 +105,9 @@ function setIconStyle(page) {
       color: "#da0446",
     };
   }
-  console.log(this);
 }
 function setActivePage(page) {
   props.activePage = page;
-  console.log(props.activePage);
 }
 const styles = StyleSheet.create({
   container: {
