@@ -35,6 +35,7 @@ import {
 
 import {db} from "./../../App";
 
+// DECLARACION DE VARIABLES QUE VAMOS A USAR
 var micIconProps = {
   micIcon: "microphone",
   bgColor: "#86b300",
@@ -48,42 +49,75 @@ var videoIconProps = {
 const dimensions = Dimensions.get('window');
 const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
 
-import firebaseConn from "./../../Services/firebase";
-const ayylmao = new firebaseConn();
-
 let currentUserId;
-currentUserId = ayylmao.getCurrentUserId();
+var llamadaIndividual = true; // si es TRUE la llamada es individual, si es FALSE es grupal
+var eresQuienLlama = false; //si es TRUE eres quien llama, si es FALSE eres quien a llaman
+var groupId = null; //variable por si hace falta
+var llamadoId = null; //variable por si hace falta
+var llamadorId = null; //variable por si hace falta
+var peerConnection = [];
+//--------------------------------------------------------------------------------
 
-import firebaseConn from "./../../Services/firebase";
-const ayylmao = new firebaseConn();
+function comprobarLlamador(datos) {
+  eresQuienLlama = datos.eresQuienLlama;
 
-let currentUserId;
-let userdisplay;
-let elkno;
-let knoId;
-//
-currentUserId = ayylmao.getCurrentUserId();
-userdisplay =
-  currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2" ? "adriangc24" : "juanbass";
-elkno =
-  currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2" ? "juanbass" : "adriangc24";
-knoId =
-  currentUserId == "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2"
-    ? "4hwdaoqyoyRj3f1IH0hD4BXZZNT2"
-    : "NrZNsYd2eKXQDBHqwxRPMBoy4Zb2";
+  if (eresQuienLlama) {
+    llamadoId = datos.llamadoId;
+    makeCallIndividual(llamadoId);
+  } else {
+    llamadorId = datos.llamadorId;
+    answerCallIndividual();
+  }
+}
 
-async function makeCall() {
+async function comprobarLlamada(datos) {
+  //Se mira el tipo de llamada
+  llamadaIndividual = datos.llamadaIndividual;
+  peerConnection.push(new RTCPeerConnection(configuration));
+
+  if (llamadaIndividual) {
+    //comprobarLlamador(datos);
+  } else {
+    groupId = datos.groupId;
+    db.ref("groups/" + groupId + "/participants").on("value", async snapshot => {
+      let aycaramba = snapshot.val();
+      console.log("ooooffer "+JSON.stringify(aycaramba));
+      let flag = true;
+      for (let userId in aycaramba) {
+        if (aycaramba[userId] != currentUserId) {
+          if (flag) {
+            flag = false;
+          } else {
+            peerConnection.push(new RTCPeerConnection(configuration));
+          }
+        }
+      }
+    });
+  }
+  Alert.alert(
+  'eiii',
+  'quieres llamar?',
+  [
+    {text: 'Yes', onPress: () => makeCallGrupal()},
+    {text: 'No', onPress: () => answerCallGrupal()},
+  ],
+  { cancelable: true }
+);
+}
+
+// FUNCIONES
+async function makeCallIndividual(llamadoId) {
   db.ref("calls/" + currentUserId).on("child_added", async snapshot => {
     console.log(JSON.stringify('SNAPSHOT UNDEFINED: -------------------' + JSON.stringify( snapshot.val())));
     let lel = snapshot.val().respuestaa.answer;
       if (lel) {
       const remoteDesc = new RTCSessionDescription(lel);
-      await peerConnection.setRemoteDescription(remoteDesc);
+      await peerConnection[0].setRemoteDescription(remoteDesc);
       console.log("got peer connection");
     }
   });
-  const offer = await peerConnection.createOffer();
-  await peerConnection.setLocalDescription(offer);
+  const offer = await peerConnection[0].createOffer();
+  await peerConnection[0].setLocalDescription(offer);
   let objetoLlamada = {
     offer: {
       type: offer.type,
@@ -92,33 +126,76 @@ async function makeCall() {
     infoUser: userdisplay,
   };
 
-  db.ref("calls/" + knoId).push().set({ofertaa: objetoLlamada});
+  db.ref("calls/" + llamadoId).push().set({ofertaa: objetoLlamada});
   console.log('oferta enviada: ' + JSON.stringify(objetoLlamada));
 }
 
-{
-  "users" : {
-    "userId" : {
-      "displayname" : "exempleDisplay",
-      "name" : "userName",
-      "lastname" : "userLastname",
-      "description" : "userDesription"
+async function makeCallGrupal() {
+  db.ref("calls/" + currentUserId).on("child_added", async snapshot => {
+    console.log('SNAPSHOT UNDEFINED: -------------------' + JSON.stringify( snapshot.val()));
+    if (JSON.stringify( snapshot.val()).includes("respuestaa")) {
+      let lel = snapshot.val().respuestaa.answer;
+        if (lel) {
+        const remoteDesc = new RTCSessionDescription(lel);
+        for (let i = 0; i < peerConnection.length ; i++ ) {
+          await peerConnection[i].setRemoteDescription(remoteDesc);
+        }
+        console.log("got peer connection");
+      }
     }
+  });
+  var offer = await peerConnection[0].createOffer();
+  for (let i = 0; i < peerConnection.length ; i++ ) {
+    offer = await peerConnection[i].createOffer();
+    await peerConnection[i].setLocalDescription(offer);
   }
+  let objetoLlamada = {
+    offer: {
+      type: offer.type,
+      sdp: offer.sdp,
+    },
+    infoUser: currentUserId,
+  };
+
+  db.ref("groups/" + groupId + "/room").push().set({ofertaa: objetoLlamada});
+  console.log('oferta enviada: ' + groupId+ JSON.stringify(objetoLlamada));
 }
 
-{
-  "oferta" : {
-    "infoUser" : "diaplayName",
-    "tipoLlamada" : "individual",
-    "offer": {
-      "sdp" : "sdpInfo",
-      "type": "offer"
+function answerCallGrupal() {
+  db.ref("groups/" + groupId + "/room").on("value", async snapshot => {
+    let ofertas = [];
+    for (var propss in snapshot.val()) {
+      if (JSON.stringify(snapshot.val()[propss]).includes("ofertaa")) {
+        let infouser = snapshot.val()[propss].ofertaa.infoUser;
+        console.log("casnweewewioejiwoqejiowqejioqejwiqoejio : " + infouser )
+        if (infouser != currentUserId) {
+          ofertas.push(snapshot.val()[propss].ofertaa);
+        }
+      }
     }
-  }
+
+    console.log('MECAGOENDIOS --------------------------------------------------------------- ' + JSON.stringify(ofertas));
+
+    for (let i = 0 ; i < ofertas.length ; i++) {
+      console.log('OFEEEERA answerCallGrupal()' + JSON.stringify(ofertas[i]).offer);
+      await peerConnection[i].setRemoteDescription(new RTCSessionDescription(ofertas[i].offer));
+      const answer = await peerConnection[i].createAnswer();
+      let objetoRespuesta = {
+        answer: {
+          type: answer.type,
+          sdp: answer.sdp,
+        },
+        infoUser: currentUserId,
+      };
+      await peerConnection[i].setLocalDescription(answer);
+      db.ref("calls/" + ofertas[i].infoUser).push().set({respuestaa: objetoRespuesta});
+    }
+    triggerCandidates();
+
+  });
 }
 
-function answerCall() {
+function answerCallIndividual() {
   db.ref("calls/" + currentUserId).once("value").then(async snapshot => {
     let lelaso;
     for (var propss in snapshot.val()) { lelaso = propss; }
@@ -128,9 +205,9 @@ function answerCall() {
     console.log('MECAGOENDIOS --------------------------------------------------------------- ' + JSON.stringify(ofertaaa))
     let offer = ofertaaa.ofertaa.offer;
     console.log('OFEEEERA anserCall()' + offer);
-    peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-    const answer = await peerConnection.createAnswer();
-    await peerConnection.setLocalDescription(answer);
+    peerConnection[0].setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await peerConnection[0].createAnswer();
+    await peerConnection[0].setLocalDescription(answer);
     let objetoRespuesta = {
       answer: {
         type: answer.type,
@@ -139,60 +216,57 @@ function answerCall() {
       infoUser: userdisplay,
     };
 
-    db.ref("calls/" + knoId).push().set({respuestaa: objetoRespuesta});
+    db.ref("calls/" + llamadorId).push().set({respuestaa: objetoRespuesta});
     console.log('HEMOS TERMINADO');
   });
 }
 
-function hacerAviso() {
-  Alert.alert(
-    "quieres llamar a " + elkno,
-    "di algo perra",
-    [
-      {
-        text: "Si",
-        onPress: () => {
-          makeCall();
-        },
-      },
-      {
-        text: "No",
-        onPress: () => {
-          Alert.alert("No has llamado");
-        },
-      },
-    ],
-    { cancelable: false }
-  );
-}
-
-function crearTrigger() {
-  db.ref("calls/" + currentUserId).on("child_added", (snapshot) => {
-      let offer = snapshot.val().ofertaa.offer;
-      if (offer) {
-        Alert.alert(
-          "te esta llamando " + elkno,
-          "quieres contestar?",
-          [
-            {
-              text: "Si",
-              onPress: () => {
-                answerCall();
-              },
-            },
-            {
-              text: "No",
-              onPress: () => {
-                Alert.alert("ere un mierda");
-              },
-            },
-          ],
-          { cancelable: false }
-        );
+function sendToPeer(payload) {
+  if (llamadaIndividual) {
+    if (eresQuienLlama) {
+      db.ref("/calls/"+ llamadoId).push().set({
+        'iceCandidate': payload
+      });
+    } else {
+      db.ref("/calls/"+ llamadorId).push().set({
+        'iceCandidate': payload
+      });
+    }
+  } else {
+    db.ref("groups/" + groupId + "/participants").on("value", async snapshot => {
+      let aycaramba = snapshot.val();
+      console.log("ooooffer "+JSON.stringify(aycaramba));
+      for (let userId in aycaramba) {
+        if (aycaramba[userId] != currentUserId) {
+          db.ref("/calls/"+ aycaramba[userId]+"/candidates").push().set({'iceCandidate': payload});
+        }
       }
-  });
+    });
+  }
 }
 
+function triggerCandidates() {
+  db.ref("calls/" + currentUserId + "/candidates").on("child_added", async snapshot => {
+    var lel = snapshot.val().iceCandidate;
+    if (lel) {
+      console.log("AQUI ENTRAMOS 1")
+      try {
+        console.log("AQUI ENTRAMOS 2")
+        for (let i = 0 ; i < peerConnection.length ; i++) {
+                console.log("AQUI ENTRAMOS 3" + lel)
+          peerConnection[i].addIceCandidate(new RTCIceCandidate(lel));
+        }
+      } catch (e) {
+
+        console.log('Error adding received ice candidate', e);
+      }
+    }
+  })
+}
+
+//-----------------------------------------------------------------
+
+// CONSTRUCTOR DE LA CALSE
 export default class VideoTest extends React.Component {
     constructor(props) {
       super(props)
@@ -200,87 +274,61 @@ export default class VideoTest extends React.Component {
       this.state = {
         localStream: null,
         remoteStream: [],
+        streams : []
       }
 
       this.sdp
       this.candidates = []
-      this.data = props.navigation.state.params.data;
+      this.data = props.navigation.state.params.data; // de esta forma pasa la info entre pantallas
 
     }
 
-      db.ref("calls/" + knoId)
-        .push()
-        .set({ respuestaa: objetoRespuesta });
-      // console.log('HEMOS TERMINADO');
-    });
-}
+    componentDidMount = () => {
+      currentUserId = firebase.auth().currentUser.uid;
 
-      var peerConnection = [];
+      comprobarLlamada({ //esto es solo para pruebas
+            "llamadaIndividual" : false,
+            "groupId" : "groupID"
+      });
 
-      if (this.data.tipoLlamada.toLowerCase() === "individual") {
-        peerConnection.push(new RTCPeerConnection(configuration));
-      } else if (this.data.tipoLlamada.toLowerCase() === "grupal") {
-        db.ref("groups/" + this.data.groupId + "/room").once("value").then(async snapshot => {
-          let aycaramba = JSON.parse(snapshot.val());
-          for (let offer in aycaramba) {
-            peerConnection.push(new RTCPeerConnection(configuration));
-          }
-        });
-      }
+      //console.log('data ----------------------------' + this.data);
 
-      hacerAviso();
-      crearTrigger();
-
-      console.log('data ----------------------------' + this.data);
-
-      db.ref("calls/" + currentUserId + "/candidates").on("child_added", async snapshot => {
-        var lel = snapshot.val().iceCandidate;
-        if (lel) {
-          try {
-            for (let ayay in peerConnection) { await ayay.addIceCandidate(lel);  }
-          } catch (e) {
-            console.log('Error adding received ice candidate', e);
-          }
-        }
-      })
-
-      for (let ayay in peerConnection) {
-        // Listen for connectionstatechange on the local RTCPeerConnection
-        ayay.addEventListener('connectionstatechange', event => {
-            if (ayay.connectionState === 'connected') {
-                console.log('YOOO SOY GIGANTEEE')
-            }
-        });
-
-        ayay.onicecandidate = (e) => {
+        peerConnection[0].onicecandidate = (e) => {
           // send the candidates to the remote peer
           // see addCandidate below to be triggered on the remote peer
 
           if (e.candidate) {
             // console.log(JSON.stringify(e.candidate))
-            ayay.sendToPeer(e.candidate)
+            sendToPeer(e.candidate);
           }
         }
 
-        // triggered when there is a change in connection state
-        ayay.oniceconnectionstatechange = (e) => {
-          console.log("peerConnection.oniceconnectionstatechange" + e)
+        peerConnection[0].onaddstream = (e) => {
+          debugger
+          this.state.remoteStream.push(e.stream);
+          console.log("TENEMOS STREAM");
+          this.state.streams = [];
+          console.log("ayyyyyyyyyyyyyyyyy" + this.state.remoteStream.length)
+          for (var i = this.state.remoteStream.length >= 1 ? 1 : 0 ; i < this.state.remoteStream.length ; i ++) {
+            let objectAux = (<RTCView
+              zOrder={1}
+              objectFit="cover"
+              style={styles.remoteStreamContainer}
+              streamURL={this.state.remoteStream[i] && this.state.remoteStream[i].toURL()}
+            />);
+            this.state.streams.push(objectAux);
+          }
+          this.setState(this.state);
         }
-
-      }
-
-      peerConnection[0].onaddstream = (e) => {
-        debugger
-
-        remoteStream.push(e.stream);
-      }
 
       const success = (stream) => {
         console.log("success" + stream.toURL())
         this.setState({
           localStream: stream
         })
-        peerConnection[0].addStream(stream)
+        for (let i = 0; i < peerConnection.length ; i++ ) {
+          peerConnection[i].addStream(stream);
+        }
       }
 
       const failure = (e) => {
@@ -329,6 +377,7 @@ export default class VideoTest extends React.Component {
         micIconProps.micIcon = "microphone-slash";
         micIconProps.bgColor = "#b30000";
       }
+      this.setState(this.state);
     }
 
     disableVideo() {
@@ -341,12 +390,7 @@ export default class VideoTest extends React.Component {
         videoIconProps.videoIcon = "video-slash";
         videoIconProps.bgColor = "#b30000";
       }
-    }
-
-    sendToPeer = (payload) => {
-      db.ref("/calls/"+ knoId +"/candidates").push().set({
-        'iceCandidate': payload
-      });
+      this.setState(this.state);
     }
 
     setRemoteDescription = () => {
@@ -354,7 +398,9 @@ export default class VideoTest extends React.Component {
       const desc = JSON.parse(this.sdp)
 
       // set sdp as remote description
-      peerConnection.setRemoteDescription(new RTCSessionDescription(desc))
+      for (var ayay in peerConnection) {
+        ayay.setRemoteDescription(new RTCSessionDescription(desc))
+      }
     }
 
     addCandidate = () => {
@@ -364,52 +410,38 @@ export default class VideoTest extends React.Component {
 
       // add the candidate to the peer connection
       // this.pc.addIceCandidate(new RTCIceCandidate(candidate))
+      console.log("DIKOSAJHDIOPUASHDUIOSAHDUIASHGDUIOYSAHDGIOUYASHDUIOSAHDIUOASHDUIOSAHDUIOSAHDIUOASHDUIYASOHDIUOSAHDUIODAHUI");
 
       this.candidates.forEach(candidate => {
-        console.log(JSON.stringify(candidate))
-        peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+        for (let i = 0; i < peerconnection.length ; i++) {
+          peerconnection[i].addIceCandidate(new RTCIceCandidate(candidate))
+        }
       });
     }
-
 
     render() {
         const {
             localStream,
             remoteStream,
+            streams
         } = this.state;
 
-        var streams = [];
+        const streamsList = streams.map((stream) => stream);
 
-        for (var i = 1 ; i < remoteStream.lenght-1 ; i++) {
-          streams.push(<RTCView
-              key={2}
-              mirror={true}
-              style={styles.remoteContainer}
-              objectFit='contain'
-              streamURL={remoteStream[i] && remoteStream[i].toURL()}
-          />);
-        }
-
-        const remoteVideo = remoteStream ?
-            (
-              <RTCView
-                  key={2}
-                  mirror={true}
-                  style={styles.remoteContainer}
-                  objectFit='contain'
-                  streamURL={remoteStream[0] && remoteStream[0].toURL()}
-              />
-            ) :
-            (
-                <View style={styles.remoteContainer}>
-                    <Text style={{ fontSize:22, textAlign: 'center', color: 'white' }}>Esperando respuesta...</Text>
-                </View>
-            );
+        const remoteVideo = remoteStream.length != 0 ? (<RTCView
+          zOrder={3}
+          objectFit="cover"
+          style={styles.remoteContainer}
+          streamURL={remoteStream[0] && remoteStream[0].toURL()}
+        />):
+        (<View style={styles.remoteContainer}>
+            <Text style={{ fontSize:22, textAlign: 'center', color: 'white' }}>Esperando respuesta...</Text>
+        </View>);
 
         return (
           <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.remoteContainer}>
-              <View style={styles.remoteStreamContainer}>{remoteVideo}</View>
+              <View>{remoteVideo}</View>
               <Fab
                 direction="down"
                 position="topRight"
@@ -442,11 +474,12 @@ export default class VideoTest extends React.Component {
               </Fab>
               <ScrollView horizontal={true} style={styles.scrollContainer}>
                 <RTCView
+                  zOrder={1}
                   objectFit="cover"
                   style={styles.remoteStreamContainer}
                   streamURL={localStream && localStream.toURL()}
                 />
-                {streams}
+                {streamsList}
               </ScrollView>
             </View>
           </SafeAreaView>
@@ -468,7 +501,7 @@ const styles = StyleSheet.create({
   },
   remoteStreamContainer: {
     borderWidth: 2,
-    backgroundColor: "red",
+    backgroundColor: "black",
     width: dimensions.height * 0.55,
     width: dimensions.width * 0.25,
     margin: 10,
