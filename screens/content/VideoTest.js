@@ -187,6 +187,13 @@ async function answerCallGrupal() {
       db.ref("calls/" + key).push().set({respuestaa: objetoRespuesta});
     }
   });
+
+  for (let key in peerConnection) {
+    if (!peerConnection[key].localDescription) {
+      makeCallGrupal();
+    }
+  }
+
 }
 
 function answerCallIndividual() {
