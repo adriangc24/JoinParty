@@ -154,13 +154,14 @@ export default class LoginScreen extends React.Component {
                   <Text>Registrarse</Text>
                 </Button>
               </View>
+              {/*
               <GoogleSigninButton
                 style={{ width: 192, height: 48 }}
                 size={GoogleSigninButton.Size.Wide}
                 color={GoogleSigninButton.Color.Light}
                 onPress={this.signInWithGoogle}
                 disabled={this.state.isSigninInProgress}
-              />
+              />*/}
             </View>
           </ImageBackground>
           <View style={styles.forgotContainer}>
