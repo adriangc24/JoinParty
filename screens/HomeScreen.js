@@ -2,8 +2,7 @@ import * as React from "react";
 import ProfileContent from "./content/ProfileContent";
 import SearchContent from "./content/SearchContent";
 import HomeContent from "./content/HomeContent";
-import VideoTest from "./content/VideoTest";
-import VideoDef from "./VideoDef";
+import FriendsContent from "./content/FriendsContent";
 
 import {
   Platform,
@@ -13,6 +12,7 @@ import {
   TouchableOpacity,
   Image,
   SafeAreaView,
+  Alert
 } from "react-native";
 import * as firebase from "firebase";
 import {
@@ -36,7 +36,34 @@ var props = {
   displayName: null,
 };
 
+
 export default class HomeScreen extends React.Component {
+
+  crearTriggerLlamada = () => {
+    let currentUserId = firebase.auth().currentUser.uid;
+
+    firebase.database().ref("calls/" + currentUserId).on("child_added", async snapshot => {
+      console.log("a: " + currentUserId + " le estan llamando: " + snapshot.val())
+      let aux = snapshot.val().ofertaa;
+      if (aux && aux.llamadaIndividual) {
+
+        Alert.alert(
+        'Epa!',
+        'Te está llamando ' + aux.infoUser + ", quieres contestar?",
+        [
+          {text: 'Si!', onPress: () => this.props.navigation.navigate("CallScreen", {data: {eresQuienLlama: false, llamadorId: aux.infoUser, llamadoId: currentUserId}})}
+        ],
+        { cancelable: true }
+      );
+      }
+    });
+
+  }
+
+  componentDidMount = () => {
+    this.crearTriggerLlamada();
+  }
+
   render() {
     return (
       <View id={"homeComps"} style={styles.container}>
@@ -44,7 +71,7 @@ export default class HomeScreen extends React.Component {
           <View id={"pageToLoad"}>
             {/* Este condicional determina que pagina sera la que se cargue */}
             {props.activePage == "HomeScreen" && <HomeContent />}
-            {props.activePage == "VideoTest" && <VideoTest />}
+            {props.activePage == "FriendsContent" && <FriendsContent />}
             {props.activePage == "SearchScreen" && <SearchContent />}
             {props.activePage == "ProfileScreen" && <ProfileContent />}
           </View>
@@ -63,13 +90,11 @@ export default class HomeScreen extends React.Component {
               <Button
                 id={"add"}
                 onPress={() => {
-                  //setActivePage("VideoDef"), this.forceUpdate();
-                  this.props.navigation.navigate("CallScreen", {
-                    data: "kelokeee",
-                  });
+                  // setActivePage("FriendsContent"), this.forceUpdate();
+                  this.props.navigation.navigate("Friends");
                 }}
               >
-                <Icon name="add-circle" style={setIconStyle("VideoTest")} />
+                <Icon name="add-circle" style={setIconStyle("FriendsContent")} />
               </Button>
               <Button
                 id={"search"}
@@ -109,6 +134,7 @@ function setIconStyle(page) {
 function setActivePage(page) {
   props.activePage = page;
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

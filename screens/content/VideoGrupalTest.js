@@ -50,74 +50,27 @@ const dimensions = Dimensions.get('window');
 const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
 
 let currentUserId;
-var llamadaIndividual = true; // si es TRUE la llamada es individual, si es FALSE es grupal
-var eresQuienLlama = false; //si es TRUE eres quien llama, si es FALSE eres quien a llaman
 var groupId = null; //variable por si hace falta
-var llamadoId = null; //variable por si hace falta
-var llamadorId = null; //variable por si hace falta
 var peerConnection = {};
 //--------------------------------------------------------------------------------
 
-function comprobarLlamador(datos) {
-  eresQuienLlama = datos.eresQuienLlama;
-
-  if (eresQuienLlama) {
-    llamadoId = datos.llamadoId;
-    makeCallIndividual(llamadoId);
-  } else {
-    llamadorId = datos.llamadorId;
-    answerCallIndividual();
-  }
-}
-
 async function comprobarLlamada(datos) {
-  //Se mira el tipo de llamada
-  llamadaIndividual = datos.llamadaIndividual;
-  // peerConnection.push(new RTCPeerConnection(configuration));
-
-  if (llamadaIndividual) {
-    //comprobarLlamador(datos);
-  } else {
-    groupId = datos.groupId;
-    db.ref("groups/" + groupId + "/participants").on("value", async snapshot => {
-      let aycaramba = snapshot.val();
-      //console.log("ooooffer "+JSON.stringify(aycaramba));
-      for (let userId in aycaramba) {
-        if (aycaramba[userId] != currentUserId) {
-          let aux1 = aycaramba[userId];
-          console.log("adding keys: " + aux1 + " y soy: " + currentUserId);
-          peerConnection[aux1] = new RTCPeerConnection(configuration);//{aycaramba[userId] : new RTCPeerConnection(configuration)}
-        }
+  groupId = datos.groupId;
+  db.ref("groups/" + groupId + "/participants").on("value", async snapshot => {
+    let aycaramba = snapshot.val();
+    //console.log("ooooffer "+JSON.stringify(aycaramba));
+    for (let userId in aycaramba) {
+      if (aycaramba[userId] != currentUserId) {
+        let aux1 = aycaramba[userId];
+        console.log("adding keys: " + aux1 + " y soy: " + currentUserId);
+        peerConnection[aux1] = new RTCPeerConnection(configuration);//{aycaramba[userId] : new RTCPeerConnection(configuration)}
       }
-    });
-  }
-}
-
-// FUNCIONES
-async function makeCallIndividual(llamadoId) {
-  db.ref("calls/" + currentUserId).on("child_added", async snapshot => {
-    console.log(JSON.stringify('SNAPSHOT UNDEFINED: -------------------' + JSON.stringify( snapshot.val())));
-    let lel = snapshot.val().respuestaa.answer;
-      if (lel) {
-      const remoteDesc = new RTCSessionDescription(lel);
-      await peerConnection[0].setRemoteDescription(remoteDesc);
-      console.log("got peer connection");
     }
   });
-  const offer = await peerConnection[0].createOffer();
-  await peerConnection[0].setLocalDescription(offer);
-  let objetoLlamada = {
-    offer: {
-      type: offer.type,
-      sdp: offer.sdp,
-    },
-    infoUser: userdisplay,
-  };
-
-  db.ref("calls/" + llamadoId).push().set({ofertaa: objetoLlamada});
-  console.log('oferta enviada: ' + JSON.stringify(objetoLlamada));
 }
 
+
+// FUNCIONES
 async function makeCallGrupal() {
   db.ref("calls/" + currentUserId).on("child_added", async snapshot => {
     console.log('SNAPSHOT UNDEFINED: -------------------' + JSON.stringify( snapshot.val()));
@@ -196,54 +149,16 @@ async function answerCallGrupal() {
 
 }
 
-function answerCallIndividual() {
-  db.ref("calls/" + currentUserId).once("value").then(async snapshot => {
-    let lelaso;
-    for (var propss in snapshot.val()) { lelaso = propss; }
-
-    let ofertaaa = snapshot.val()[lelaso];
-
-    console.log('MECAGOENDIOS --------------------------------------------------------------- ' + JSON.stringify(ofertaaa))
-    let offer = ofertaaa.ofertaa.offer;
-    console.log('OFEEEERA anserCall()' + offer);
-    peerConnection[0].setRemoteDescription(new RTCSessionDescription(offer));
-    const answer = await peerConnection[0].createAnswer();
-    await peerConnection[0].setLocalDescription(answer);
-    let objetoRespuesta = {
-      answer: {
-        type: answer.type,
-        sdp: answer.sdp,
-      },
-      infoUser: userdisplay,
-    };
-
-    db.ref("calls/" + llamadorId).push().set({respuestaa: objetoRespuesta});
-    console.log('HEMOS TERMINADO');
-  });
-}
-
 function sendToPeer(payload) {
-  if (llamadaIndividual) {
-    if (eresQuienLlama) {
-      db.ref("/calls/"+ llamadoId).push().set({
-        'iceCandidate': payload
-      });
-    } else {
-      db.ref("/calls/"+ llamadorId).push().set({
-        'iceCandidate': payload
-      });
-    }
-  } else {
-    db.ref("groups/" + groupId + "/participants").on("value", async snapshot => {
-      let aycaramba = snapshot.val();
-      console.log("ooooffer "+JSON.stringify(aycaramba));
-      for (let userId in aycaramba) {
-        if (aycaramba[userId] != currentUserId) {
-          db.ref("/calls/"+ aycaramba[userId]+"/candidates").push().set({'iceCandidate': payload});
-        }
+  db.ref("groups/" + groupId + "/participants").on("value", async snapshot => {
+    let aycaramba = snapshot.val();
+    console.log("ooooffer "+JSON.stringify(aycaramba));
+    for (let userId in aycaramba) {
+      if (aycaramba[userId] != currentUserId) {
+        db.ref("/calls/"+ aycaramba[userId]+"/candidates").push().set({'iceCandidate': payload});
       }
-    });
-  }
+    }
+  });
 }
 
 function triggerCandidates() {
@@ -262,6 +177,19 @@ function triggerCandidates() {
   })
 }
 
+function decide() {
+  Alert.alert(
+    'eiii',
+    'quieres llamar?',
+  [
+    {text: 'Yes', onPress: () => makeCallGrupal()},
+    {text: 'No', onPress: () => answerCallGrupal()},
+  ],
+    { cancelable: true }
+  );
+}
+
+
 //-----------------------------------------------------------------
 
 // CONSTRUCTOR DE LA CALSE
@@ -277,7 +205,6 @@ export default class VideoTest extends React.Component {
 
       this.sdp
       this.candidates = []
-      this.data = props.navigation.state.params.data; // de esta forma pasa la info entre pantallas
 
     }
 
@@ -321,16 +248,8 @@ export default class VideoTest extends React.Component {
 
       }
 
-      Alert.alert(
-      'eiii',
-      'quieres llamar?',
-      [
-        {text: 'Yes', onPress: () => makeCallGrupal()},
-        {text: 'No', onPress: () => answerCallGrupal()},
-      ],
-      { cancelable: true }
-    );
-triggerCandidates();
+      triggerCandidates();
+
       const success = (stream) => {
         console.log("success" + stream.toURL())
         this.setState({
@@ -339,6 +258,7 @@ triggerCandidates();
         for (let key in peerConnection) {
           peerConnection[key].addStream(stream);
         }
+        decide();
       }
 
       const failure = (e) => {
