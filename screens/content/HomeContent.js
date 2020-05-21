@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as firebase from "firebase";
 import CardView from "./CardView";
 
 import {
@@ -30,22 +31,51 @@ import {
   CardItem,
   Thumbnail,
   Right,
+  List,
 } from "native-base";
 
-addPost = () => {};
-
 export default class HomeContent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.returnCards = this.returnCards.bind(this);
+  }
+  state = {
+    contador: 0,
+    arrayCards: [],
+  };
+
+  componentDidMount() {
+    this.returnCards();
+  }
+
+  returnCards() {
+    var count = 0;
+    var ref = firebase.database().ref("posts");
+    const snap = ref.once("value", function (snapshot) {
+      snapshot.forEach(function (child) {
+        child.forEach((x) => {
+          count = count + 1;
+        });
+      });
+    });
+    snap.then(() => {
+      var array = [];
+      this.setState({ contador: count });
+      for (let i = 0; i < count; i++) {
+        array.push(<CardView style={styles.card} />);
+      }
+      this.setState({ arrayCards: array });
+      console.log(this.state.arrayCards);
+    });
+  }
+
   render() {
     return (
       <View id={"profileComps"} style={styles.container}>
         <Content>
           <ScrollView>
             <View id={"cardContainer"} style={styles.cardContainer}>
-              <CardView />
-              <CardView />
-              <CardView />
-              <CardView />
-              <CardView />
+              <List style={styles.list}>{this.state.arrayCards}</List>
             </View>
           </ScrollView>
         </Content>
@@ -54,6 +84,10 @@ export default class HomeContent extends React.Component {
   }
 }
 const styles = StyleSheet.create({
+  list: {
+    width: "90%",
+    alignItems: "center",
+  },
   carousel: {
     alignItems: "center",
     flex: 1,

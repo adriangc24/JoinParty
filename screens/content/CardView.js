@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as firebase from "firebase";
 import {
   Platform,
   View,
@@ -29,17 +30,121 @@ import {
   Thumbnail,
   Right,
 } from "native-base";
+var defaultProfile = require("../../assets/defaultProfile.png");
 
+var cnt = 0;
 export default class CardView extends React.Component {
   constructor(props) {
     super(props);
-
+    this.getData = this.getData.bind(this);
     this.handleLike = this.handleLike.bind(this);
+    this.renderData = this.renderData.bind(this);
+    this.showData = this.showData.bind(this);
+  }
+  state = {
+    post: {
+      uid: "",
+      likes: 0,
+      displayname: "",
+      name: "",
+      lastname: "",
+      photoPost: null,
+      photoUrl: null,
+    },
+    arrayPosts: [],
+    arrayDisplaynames: [],
+    arrayNames: [],
+    arrayPhotoUrls: [],
+    arrayPhotoPosts: [],
+    arrayLastNames: [],
+    arrayLikes: [],
+    publicaciones: [
+      {
+        uid: "",
+        likes: 0,
+        displayname: "",
+        name: "",
+        lastname: "",
+        photoPost: null,
+        photoUrl: null,
+      },
+    ],
+  };
+
+  componentDidMount() {
+    this.getData();
   }
 
   handleLike = () => {
     console.log("handling like");
   };
+
+  getData = () => {
+    var aux = [];
+    var obj = {};
+    var ref = firebase.database().ref("posts");
+    var query = ref.orderByChild("displayname");
+    query
+      .once("value", function (snapshot) {
+        var lol = JSON.stringify(snapshot);
+        snapshot.forEach(function (child) {
+          child.forEach(function (child2) {
+            var lolaso = JSON.stringify(child2.val());
+            obj = child2.val();
+            aux.push(obj);
+          });
+        });
+      })
+      .then(() => {
+        //console.log(aux);
+        this.setState({ arrayPosts: aux });
+        this.renderData();
+      });
+  };
+  renderData = () => {
+    var post3;
+
+    for (let i = 0; i < this.state.arrayPosts.length; i++) {
+      console.log(
+        "XXXXXXXXX " + JSON.stringify(this.state.arrayPosts[i].photoPost)
+      );
+      post3 = {
+        likes: this.state.arrayPosts[i].likes,
+        photoPost: this.state.arrayPosts[i].photoPost,
+        photoUrl: "",
+      };
+
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          var usuario = firebase.database().ref("/users/" + user.uid);
+          usuario.once("value").then((snapshot) => {
+            var usr = snapshot.val();
+            if (usr.photoUrl == null || usr.photoUrl == "") {
+              post3.photoUrl =
+                "https://firebasestorage.googleapis.com/v0/b/joinparty-4e37b.appspot.com/o/defaultProfile.png?alt=media&token=18296d12-e579-4401-bec5-22aa325ecc01";
+            } else {
+              post3.photoUrl = usr.photoUrl;
+            }
+
+            post3.uid = user.uid;
+            (post3.displayname = usr.displayname),
+              (post3.name = usr.name),
+              (post3.lastname = usr.lastname),
+              this.setState({
+                post: post3,
+              });
+          });
+
+          // User logged in already or has just logged in.
+        } else {
+          // User not logged in or has just logged out.
+        }
+      });
+      this.setState({ post: post3 });
+    }
+  };
+
+  showData = () => {};
 
   render() {
     return (
@@ -48,21 +153,21 @@ export default class CardView extends React.Component {
           <Left>
             <Thumbnail
               source={{
-                uri:
-                  "https://firebasestorage.googleapis.com/v0/b/joinparty-4e37b.appspot.com/o/adriangc24.jpeg?alt=media&token=cb84c9c2-da81-4c40-8e5f-5ea45c933987",
+                uri: this.state.post.photoUrl,
               }}
             />
             <Body>
-              <Text>Adrián González</Text>
-              <Text note>@adriangc24</Text>
+              <Text>
+                {this.state.post.name + " " + this.state.post.lastname}
+              </Text>
+              <Text note>{"@" + this.state.post.displayname}</Text>
             </Body>
           </Left>
         </CardItem>
         <CardItem cardBody>
           <Image
             source={{
-              uri:
-                "https://firebasestorage.googleapis.com/v0/b/joinparty-4e37b.appspot.com/o/posts%2Fparty.gif?alt=media&token=b42c5c17-3e9a-45ce-8966-08bfe6c7792f",
+              uri: this.state.post.photoPost,
             }}
             style={{ height: 200, width: null, flex: 1 }}
           />
@@ -75,7 +180,7 @@ export default class CardView extends React.Component {
               onPress={this.handleLike}
             >
               <Icon name="thumbs-up" style={styles.likeIcon} />
-              <Text style={styles.textLikes}>0</Text>
+              <Text style={styles.textLikes}>{this.state.post.likes}</Text>
             </Button>
           </Left>
 

@@ -95,10 +95,11 @@ export const dynamicItem = (
     updateFollow = (flag) => {
       var array = this.state.followingArray;
       if (flag == "follow") {
-        array.push(uid);
+        array = array.push(uid);
       } else if (flag == "unfollow") {
-        array.splice(array.indexOf(uid), 1);
+        array = array.splice(array.indexOf(uid), 1);
       }
+      console.log(array);
       this.setState({ followingArray: array });
     };
 
@@ -152,10 +153,7 @@ export const dynamicItem = (
             ref = firebase
               .database()
               .ref("social/" + currentUser + "/follows/" + childSnapshot.key)
-              .remove()
-              .then(() => {
-                console.log("REMOVE follows OK");
-              });
+              .remove();
           }
         });
       });
@@ -173,10 +171,7 @@ export const dynamicItem = (
           var ref = firebase
             .database()
             .ref("social/" + uid + "/followed_by/" + childSnapshot.key)
-            .remove()
-            .then(() => {
-              console.log("REMOVE followed by ok");
-            });
+            .remove();
         });
       });
     };

@@ -212,6 +212,12 @@ async function answerCallGrupal() {
         .set({ respuestaa: objetoRespuesta });
     }
   });
+
+  for (let key in peerConnection) {
+    if (!peerConnection[key].setLocalDescription) {
+      makeCallGrupal();
+    }
+  }
 }
 
 function answerCallIndividual() {

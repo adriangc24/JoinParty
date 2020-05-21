@@ -148,11 +148,8 @@ export default class HomeScreen extends React.Component {
           .database()
           .ref("posts/" + this.state.uid)
           .push({
+            likes: 0,
             uid: this.state.uid,
-            name: this.state.name,
-            lastname: this.state.lastname,
-            displayname: this.state.displayname,
-            photoUrl: this.state.photoUrl,
             photoPost: this.state.photoPost,
           });
       })
