@@ -151,7 +151,6 @@ function triggerCandidates() {
     }
   })
 }
-
 //-----------------------------------------------------------------
 
 // CONSTRUCTOR DE LA CALSE
@@ -173,7 +172,6 @@ export default class LlamadaIndividual extends React.Component {
 
     componentDidMount = () => {
       currentUserId = firebase.auth().currentUser.uid;
-      console.log("aqui estamos lok")
 
       peerConnection.onaddstream = (e) => {
         debugger
@@ -267,27 +265,9 @@ export default class LlamadaIndividual extends React.Component {
       this.setState(this.state);
     }
 
-    setRemoteDescription = () => {
-      // retrieve and parse the SDP copied from the remote peer
-      const desc = JSON.parse(this.sdp)
-
-      // set sdp as remote description
-      peerConnection.setRemoteDescription(new RTCSessionDescription(desc))
-
-    }
-
-    addCandidate = () => {
-      // retrieve and parse the Candidate copied from the remote peer
-      // const candidate = JSON.parse(this.textref.value)
-      // console.log('Adding candidate:', candidate)
-
-      // add the candidate to the peer connection
-      // this.pc.addIceCandidate(new RTCIceCandidate(candidate))
-      console.log("DIKOSAJHDIOPUASHDUIOSAHDUIASHGDUIOYSAHDGIOUYASHDUIOSAHDIUOASHDUIOSAHDUIOSAHDIUOASHDUIYASOHDIUOSAHDUIODAHUI");
-
-      this.candidates.forEach(candidate => {
-        peerconnection.addIceCandidate(new RTCIceCandidate(candidate))
-      });
+    resetPC() {
+      peerConnection.close();
+      peerConnection = new RTCPeerConnection(configuration);
     }
 
     render() {
@@ -322,8 +302,7 @@ export default class LlamadaIndividual extends React.Component {
                 <Button
                   style={{ backgroundColor: "#b30000" }}
                   onPress={() => {
-                    peerConnection.close();
-                    peerConnection = new RTCPeerConnection(configuration);
+                    this.resetPC();
                     this.props.navigation.navigate("Home");
                   }}
                 >

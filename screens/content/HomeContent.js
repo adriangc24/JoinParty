@@ -32,6 +32,8 @@ import {
   Right,
 } from "native-base";
 
+addPost = () => {};
+
 export default class HomeContent extends React.Component {
   render() {
     return (

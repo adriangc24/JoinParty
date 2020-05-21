@@ -34,13 +34,9 @@ export default class CardView extends React.Component {
   constructor(props) {
     super(props);
 
-    this.handleComment = this.handleComment.bind(this);
     this.handleLike = this.handleLike.bind(this);
   }
 
-  handleComment = () => {
-    console.log("handling comment");
-  };
   handleLike = () => {
     console.log("handling like");
   };
@@ -82,16 +78,7 @@ export default class CardView extends React.Component {
               <Text style={styles.textLikes}>0</Text>
             </Button>
           </Left>
-          <Body>
-            <Button
-              transparent
-              style={styles.buttonComments}
-              onPress={this.handleComment}
-            >
-              <Icon name="chatbubbles" style={styles.chatIcon} />
-              <Text style={styles.textComments}>0</Text>
-            </Button>
-          </Body>
+
           <Right>
             <Text>Hace 11 H.</Text>
           </Right>

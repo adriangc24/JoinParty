@@ -97,7 +97,7 @@ this.setState(this.state);
             <Button transparent onPress={() => {
               this.props.navigation.navigate("CallLab");
             }}>
-              <Icon name='dice' />
+              <Icon name='flask' />
             </Button>
             <Button transparent onPress={() => {
               this.forceUpdate();

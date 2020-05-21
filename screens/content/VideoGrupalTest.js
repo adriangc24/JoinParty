@@ -58,7 +58,6 @@ async function comprobarLlamada(datos) {
   groupId = datos.groupId;
   db.ref("groups/" + groupId + "/participants").on("value", async snapshot => {
     let aycaramba = snapshot.val();
-    //console.log("ooooffer "+JSON.stringify(aycaramba));
     for (let userId in aycaramba) {
       if (aycaramba[userId] != currentUserId) {
         let aux1 = aycaramba[userId];
@@ -251,14 +250,16 @@ export default class VideoTest extends React.Component {
       triggerCandidates();
 
       const success = (stream) => {
-        console.log("success" + stream.toURL())
+        console.log("success " + stream.toURL())
         this.setState({
           localStream: stream
         })
+
         for (let key in peerConnection) {
           peerConnection[key].addStream(stream);
         }
-        decide();
+
+        decide()
       }
 
       const failure = (e) => {
@@ -321,32 +322,6 @@ export default class VideoTest extends React.Component {
         videoIconProps.bgColor = "#b30000";
       }
       this.setState(this.state);
-    }
-
-    setRemoteDescription = () => {
-      // retrieve and parse the SDP copied from the remote peer
-      const desc = JSON.parse(this.sdp)
-
-      // set sdp as remote description
-      for (var ayay in peerConnection) {
-        peerConnection[ayay].setRemoteDescription(new RTCSessionDescription(desc))
-      }
-    }
-
-    addCandidate = () => {
-      // retrieve and parse the Candidate copied from the remote peer
-      // const candidate = JSON.parse(this.textref.value)
-      // console.log('Adding candidate:', candidate)
-
-      // add the candidate to the peer connection
-      // this.pc.addIceCandidate(new RTCIceCandidate(candidate))
-      console.log("DIKOSAJHDIOPUASHDUIOSAHDUIASHGDUIOYSAHDGIOUYASHDUIOSAHDIUOASHDUIOSAHDUIOSAHDIUOASHDUIYASOHDIUOSAHDUIODAHUI");
-
-      this.candidates.forEach(candidate => {
-        for (let i = 0; i < peerconnection.length ; i++) {
-          peerconnection[i].addIceCandidate(new RTCIceCandidate(candidate))
-        }
-      });
     }
 
     render() {
