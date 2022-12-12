@@ -22,7 +22,7 @@
     "dotenv": "^8.2.0",
     "expo": "^37.0.10",
     "expo-font": "^8.1.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "firebase": "^7.14.3",
     "firebase-admin": "^8.12.1",
     "fs": "0.0.1-security",
